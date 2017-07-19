@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database name="phenomenal" defaultIdMethod="native" defaultPhpNamingMethod="underscore">
+  <table name="metadata" idMethod="native" phpName="Metadata">
+    <column name="idmetadata" phpName="Idmetadata" type="VARCHAR" size="300" primaryKey="true" required="true"/>
+    <column name="isAcceptTermCondition" phpName="Isaccepttermcondition" type="TINYINT"/>
+    <column name="isRegisterGalaxy" phpName="Isregistergalaxy" type="TINYINT"/>
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+  </table>
+</database>

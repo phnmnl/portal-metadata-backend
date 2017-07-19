@@ -1,0 +1,7 @@
+{
+  "name": "Cultural Heritage Museum API",
+  "version": "1.0.0",
+  "description": "Cultural Heritage Museum RESTful API",
+  "title": "Cultural Heritage Museum API",
+  "url" : "api/v1"
+}
