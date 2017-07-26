@@ -1,7 +1,7 @@
 {
-  "name": "Cultural Heritage Museum API",
+  "name": "PhenoMeNal Portal API",
   "version": "1.0.0",
-  "description": "Cultural Heritage Museum RESTful API",
-  "title": "Cultural Heritage Museum API",
+  "description": "PhenoMeNal Portal API",
+  "title": "PhenoMeNal Portal API",
   "url" : "api/v1"
 }
