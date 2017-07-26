@@ -17,15 +17,6 @@ $app->get('/', function ($request, $response, $args) {
 // Helper functions
 require __DIR__ . '/../src/share/helper.php';
 
-//require __DIR__ . '/../src/share/rateLimit.php';
 
 // Register routes
-require __DIR__ . '/../src/controller/InstitutionController.php';
-require __DIR__ . '/../src/controller/ExhibitionController.php';
-require __DIR__ . '/../src/controller/CulturalObjectController.php';
-require __DIR__ . '/../src/controller/MediaObjectController.php';
-require __DIR__ . '/../src/controller/AssociatedMediaObjectController.php';
-require __DIR__ . '/../src/controller/CollectionController.php';
 require __DIR__ . '/../src/controller/MetadataController.php';
-
-

@@ -5,6 +5,17 @@ class MetadataService {
     private $tableName = 'Metadata';
     private $primaryKey = 'Idmetadata';
 
+    function getGoogleKey() {
+
+        $output = shell_exec('python service-account.py');
+        $output = preg_replace("/\r\n|\r|\n/",'',$output);
+        header('Content-type: application/json');
+        $sub = array ('key'=>$output);
+        $arr = array ('result'=>1,'data'=>$sub);
+
+        return $arr;
+    }
+
     function get($id) {
         $entity = MetadataQuery::create()->findPk($id);
 
