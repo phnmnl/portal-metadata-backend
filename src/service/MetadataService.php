@@ -5,6 +5,11 @@ class MetadataService {
     private $tableName = 'Metadata';
     private $primaryKey = 'Idmetadata';
 
+    function getJenkinsReport() {
+
+        return PhenomenalJenkinsReport::get_json_report();
+    }
+
     function getGoogleKey() {
 
         $output = shell_exec('python service-account.py');

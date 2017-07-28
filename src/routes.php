@@ -16,6 +16,7 @@ $app->get('/', function ($request, $response, $args) {
 
 // Helper functions
 require __DIR__ . '/../src/share/helper.php';
+require __DIR__ . '/../src/share/jenkinsReport.php';
 
 
 // Register routes
