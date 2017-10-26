@@ -1,14 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="4827d141-1b9a-4a25-b881-f311e8bf365d" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/galaxy-config.json" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/galaxy-key.json" afterPath="" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/galaxy-key.py" afterPath="$PROJECT_DIR$/galaxy-config.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/controller/MetadataController.php" afterPath="$PROJECT_DIR$/src/controller/MetadataController.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/service/MetadataService.php" afterPath="$PROJECT_DIR$/src/service/MetadataService.php" />
-    </list>
+    <list default="true" id="4827d141-1b9a-4a25-b881-f311e8bf365d" name="Default" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -471,7 +464,7 @@
       <workItem from="1501247173766" duration="10000" />
       <workItem from="1501247210246" duration="60000" />
       <workItem from="1501247283774" duration="1277000" />
-      <workItem from="1508923412609" duration="10815000" />
+      <workItem from="1508923412609" duration="10860000" />
     </task>
     <servers />
   </component>
@@ -508,7 +501,7 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="99527000" />
+    <option name="totallyTimeSpent" value="99572000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
