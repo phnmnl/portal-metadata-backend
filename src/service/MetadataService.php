@@ -21,6 +21,24 @@ class MetadataService {
         return $arr;
     }
 
+    function getGalaxyKey($id) {
+
+        $entity = MetadataQuery::create()->findPk($id);
+
+        if($entity == null){
+            $data = helper::getError(404, 'The '.$this->primaryKey.' of the '.$this->tableName.' was not found');
+        } else {
+            $output = shell_exec('python galaxy-key.py');
+            $output = preg_replace("/\r\n|\r|\n/",'',$output);
+            header('Content-type: application/json');
+            $sub = array ('key'=>$output);
+            $data = array ('result'=>1,'data'=>$sub);
+        }
+
+        return $data;
+    }
+
+
     function get($id) {
         $entity = MetadataQuery::create()->findPk($id);
 
