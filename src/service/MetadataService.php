@@ -24,20 +24,14 @@ class MetadataService
         return $arr;
     }
 
-    function createGalaxyUser($array)
+    function createGalaxyUser($array, $galaxy_url, $galaxy_api_key)
     {
-
         $entity = MetadataQuery::create()->findPk($array['token']);
 
         if ($entity == null) {
             $data = helper::getError(404, 'The ' . $this->primaryKey . ' of the ' . $this->tableName . ' was not found');
         } else {
-            $key = shell_exec('python galaxy-config.py galaxy-key');
-            $key = preg_replace("/\r\n|\r|\n/", '', $key);
-            $url = shell_exec('python galaxy-config.py galaxy_url');
-            $url = preg_replace("/\r\n|\r|\n/", '', $url);
-
-            $url = $url . '/api/users?key=' . $key;
+            $url = $galaxy_url . '/api/users?key=' . $galaxy_api_key;
             $fields = array('email' => $array['email'], 'password' => $array['password'], 'username' => $array['username']);
 
 

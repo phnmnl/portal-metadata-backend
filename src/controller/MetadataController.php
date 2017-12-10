@@ -54,10 +54,10 @@ $app->get($apiPathPrefix.'/metadata/{id}', function ($request, $response) {
 
 $app->post($apiPathPrefix.'/metadata/createGalaxyUser', function ($request, $response) {
 
+    $settings = $this->get('settings');
     $parsedBody = $request->getParsedBody();
     $service = new MetadataService();
-
-    return $service->createGalaxyUser($parsedBody);
+    return $service->createGalaxyUser($parsedBody, $settings["galaxy"]["url"], $settings["galaxy"]["key"]);
 
 });
 
