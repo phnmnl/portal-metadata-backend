@@ -1,0 +1,18 @@
+propel:
+  database:
+      connections:
+          phenomenal:
+              adapter: mysql
+              classname: Propel\Runtime\Connection\ConnectionWrapper
+              dsn: "mysql:host=phenomenal;dbname=phenomenal"
+              user: backend-user
+              password: htgcsak
+              attributes:
+  runtime:
+      defaultConnection: phenomenal
+      connections:
+          - phenomenal
+  generator:
+      defaultConnection: phenomenal
+      connections:
+          - phenomenal
