@@ -15,3 +15,19 @@ fi
 sed "s/dsn: \"mysql:host=localhost;dbname=phenomenal\"/dsn: \"mysql:host=${MYSQL_HOST};dbname=phenomenal\"/" ${template_propel_file} | \
 sed "s/user: root/user: ${MYSQL_USER}/" | \
 sed "s/password: 12345678/password: ${MYSQL_PASSWORD}/" > ${current_propel_file}
+
+
+########################################################################################################################
+# Update 'settings.php' configuration file
+########################################################################################################################
+settings_file="src/settings.php"
+settings_template_file="src/settings.php.template"
+
+# if the template has been remove, use the actual file as template
+if [[ ! -f ${settings_template_file} ]]; then
+    mv ${settings_file} ${settings_template_file}
+fi
+
+# update GALAXY settings
+sed "s@\"url\" => \"<GALAXY_URL>\"@\"url\" => \"${GALAXY_URL}\"@g" ${settings_template_file} | \
+sed "s@\"api_key\" => \"<GALAXY_API_KEY>\"@\"api_key\" => \"${GALAXY_API_KEY}\"@g" > ${settings_file}
