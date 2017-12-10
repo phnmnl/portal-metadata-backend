@@ -7,3 +7,7 @@
 # ignore configuration files
 schema/propel.yaml
 src/settings.php
+
+# ignore generated schema files
+generated-sql
+schema/generated*
