@@ -1,10 +1,22 @@
 <?php
 
+
 class MetadataService
 {
 
     private $tableName = 'Metadata';
     private $primaryKey = 'Idmetadata';
+    private $logger;
+    private $galaxy_url;
+    private $galaxy_api_key;
+
+    public function __construct(Monolog\Logger $logger, $galaxy_url, $galaxy_api_key)
+    {
+        $this->logger = $logger;
+        $this->galaxy_url = $galaxy_url;
+        $this->galaxy_api_key = $galaxy_api_key;
+    }
+
 
     function getJenkinsReport()
     {
