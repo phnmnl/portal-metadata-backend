@@ -15,9 +15,9 @@ require __DIR__ . '/../service/MetadataService.php';
  * @apiSuccess {Boolean} Is Term and Condition agreed?
  */
 
-$app->get($apiPathPrefix.'/metadata/getJenkinsReport', function ($request, $response) {
+$app->get($apiPathPrefix . '/metadata/getJenkinsReport', function ($request, $response) {
 
-    $service = new MetadataService();
+    $service = $this->get('metadataService');
 
     return $response
         ->withHeader('Access-Control-Allow-Origin', 'http://localhost:3000')
@@ -27,9 +27,9 @@ $app->get($apiPathPrefix.'/metadata/getJenkinsReport', function ($request, $resp
 
 });
 
-$app->get($apiPathPrefix.'/metadata/getGoogleKey', function ($request, $response) {
+$app->get($apiPathPrefix . '/metadata/getGoogleKey', function ($request, $response) {
 
-    $service = new MetadataService();
+    $service = $this->get('metadataService');
 
     return $response
         ->withHeader('Access-Control-Allow-Origin', 'http://localhost:3000')
@@ -42,7 +42,7 @@ $app->get($apiPathPrefix.'/metadata/getGoogleKey', function ($request, $response
 $app->get($apiPathPrefix.'/metadata/{id}', function ($request, $response) {
     $id = $request->getAttribute('id');
 
-    $service = new MetadataService();
+    $service = $this->get('metadataService');
 
     return $response
         ->withHeader('Access-Control-Allow-Origin', 'http://localhost:3000')
@@ -52,19 +52,18 @@ $app->get($apiPathPrefix.'/metadata/{id}', function ($request, $response) {
 
 });
 
-$app->post($apiPathPrefix.'/metadata/createGalaxyUser', function ($request, $response) {
+$app->post($apiPathPrefix . '/metadata/createGalaxyUser', function ($request, $response) {
 
-    $settings = $this->get('settings');
     $parsedBody = $request->getParsedBody();
-    $service = new MetadataService();
-    return $service->createGalaxyUser($parsedBody, $settings["galaxy"]["url"], $settings["galaxy"]["key"]);
+    $service = $this->get('metadataService');
+    return $response->withJson($service->createGalaxyUser($parsedBody));
 
 });
 
-$app->post($apiPathPrefix.'/metadata', function ($request, $response) {
+$app->post($apiPathPrefix . '/metadata', function ($request, $response) {
 
     $parsedBody = $request->getParsedBody();
-    $service = new MetadataService();
+    $service = $this->get('metadataService');
 
     return $response
         ->withHeader('Access-Control-Allow-Origin', 'http://localhost:3000')
@@ -74,10 +73,9 @@ $app->post($apiPathPrefix.'/metadata', function ($request, $response) {
 });
 
 
-
-$app->put($apiPathPrefix.'/metadata', function ($request, $response) {
+$app->put($apiPathPrefix . '/metadata', function ($request, $response) {
     $parsedBody = $request->getParsedBody();
-    $service = new MetadataService();
+    $service = $this->get('metadataService');
 
     return $response->withHeader('Access-Control-Allow-Origin', 'http://localhost:3000')
         ->withHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Origin, Authorization')
@@ -86,10 +84,10 @@ $app->put($apiPathPrefix.'/metadata', function ($request, $response) {
 });
 
 
-$app->delete($apiPathPrefix.'/metadata/{id}', function ($request, $response) {
+$app->delete($apiPathPrefix . '/metadata/{id}', function ($request, $response) {
     $id = $request->getAttribute('id');
 
-    $service = new MetadataService();
+    $service = $this->get('metadataService');
 
     return $response
         ->withHeader('Access-Control-Allow-Origin', 'http://localhost:3000')
