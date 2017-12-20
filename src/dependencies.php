@@ -23,3 +23,23 @@ $container['metadataService'] = function ($c) {
     $settings = $c->get('settings');
     return new MetadataService($c['logger'], $settings["galaxy"]["url"], $settings["galaxy"]["api_key"]);
 };
+
+
+// Set the default ErrorHandler
+$container['errorHandler'] = function ($c) {
+    return function ($request, $response, $exception) use ($c) {
+        $c['logger']->debug("Handling error with custom phpErrorHandler");
+
+        if ($exception instanceof MetadataServiceException) {
+            $c['logger']->debug("instance of MetadataServiceException");
+            return $c['response']->withJson($exception->toArray(), $exception->getCode());
+        } else
+            return $c['response']->withJson(
+                array(
+                    "code" => $exception->getCode(),
+                    "message" => $exception->getMessage(),
+                    "trace" => $exception->getTrace()
+                ), $exception->getCode()
+            );
+    };
+};
