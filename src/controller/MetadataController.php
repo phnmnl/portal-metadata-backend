@@ -39,7 +39,39 @@ $app->get($apiPathPrefix . '/metadata/getGoogleKey', function ($request, $respon
 
 });
 
-$app->get($apiPathPrefix.'/metadata/{id}', function ($request, $response) {
+$app->get(/**
+ * @param $request
+ * @param $response
+ * @return mixed
+ */
+    $apiPathPrefix . '/metadata', function ($request, $response) {
+    $query = $request->getQueryParams();
+
+    $logger = $this->get("logger");
+    $logger->debug("Query: " . json_encode($query));
+
+    $service = $this->get('metadataService');
+
+    $data = null;
+    if(isset($query["id"]))
+        $data = $service->findById($query["id"]);
+    elseif(isset($query["ids"]))
+        $data = $service->findByIds(explode(",", $query["ids"]));
+    else
+        $data = $service->find($query);
+
+    if(empty($data))
+        $data = false;
+
+    $logger->debug("The result: " . json_encode($data));
+
+    return $response
+        ->withHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Origin, Authorization')
+        ->withJson($data);
+});
+
+
+$app->get($apiPathPrefix . '/metadata/{id}', function ($request, $response) {
     $id = $request->getAttribute('id');
 
     $service = $this->get('metadataService');
