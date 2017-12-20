@@ -36,16 +36,21 @@ class MetadataService
         return $arr;
     }
 
-    function createGalaxyUser($array, $galaxy_url, $galaxy_api_key)
+    /**
+     * @param $array
+     * @return array|mixed
+     * @throws MetadataServiceException
+     */
+    function createGalaxyUser($array)
     {
+        $data = array();
         $entity = MetadataQuery::create()->findPk($array['token']);
 
         if ($entity == null) {
-            $data = helper::getError(404, 'The ' . $this->primaryKey . ' of the ' . $this->tableName . ' was not found');
+            $data[] = helper::getError(404, 'The ' . $this->primaryKey . ' of the ' . $this->tableName . ' was not found');
         } else {
-            $url = $galaxy_url . '/api/users?key=' . $galaxy_api_key;
+            $url = $this->galaxy_url . '/api/users?key=' . $this->galaxy_api_key;
             $fields = array('email' => $array['email'], 'password' => $array['password'], 'username' => $array['username']);
-
 
             $fields_string = '';
             foreach ($fields as $key => $value) {
@@ -53,15 +58,42 @@ class MetadataService
             }
             rtrim($fields_string, '&');
 
+            $this->logger->debug("Processing request 'createGalaxyUser': URL=$url");
+
             $ch = curl_init();
 
             curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_POST, count($fields));
             curl_setopt($ch, CURLOPT_POSTFIELDS, $fields_string);
 
-            $data = curl_exec($ch);
+            $result = curl_exec($ch);
+
+            curl_close($ch);
+
+            $this->logger->debug("Raw response: " . $result);
+            $data = json_decode($result, true);
+            $this->logger->debug("Array correctly decoded!");
+
+            if ($data && !isset($data["err_code"]) || $data['err_code']== '400008') {
+                // update to true 'setIsregistergalaxy' when error_code=400008,
+                // that implies an already registered user
+                $entity->setIsaccepttermcondition(true);
+                $entity->setIsregistergalaxy(true);
+                $entity->save();
+                $data['data'] = $entity->toArray();
+            }
+
+            if ($data && isset($data["err_code"])){
+                $this->logger->debug("Setting error CODE");
+                throw new MetadataServiceException(
+                    $data[/** @lang text */
+                    "err_msg"], $data['err_code'] == '400008' ? 409 : 500, $data);
+            }
+            $this->logger->debug("Return from createGalaxyUser method!!!");
         }
 
+        $this->logger->debug("Type of the DATA object: " . gettype($data));
         return $data;
     }
 
@@ -73,7 +105,8 @@ class MetadataService
         $data = array();
 
         if ($entity == null) {
-            $data = helper::getError(404, 'The ' . $this->primaryKey . ' of the ' . $this->tableName . ' was not found');
+            #$data = helper::getError(404, 'The ' . $this->primaryKey . ' of the ' . $this->tableName . ' was not found');
+            throw new MetadataNotFoundException('The ' . $this->primaryKey . ' of the ' . $this->tableName . ' was not found');
         } else {
             $data['data'] = $entity->toArray();
         }
