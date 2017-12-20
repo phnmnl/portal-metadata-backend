@@ -17,7 +17,8 @@ $app->get('/', function ($request, $response, $args) {
 // Helper functions
 require __DIR__ . '/../src/share/helper.php';
 require __DIR__ . '/../src/share/jenkinsReport.php';
-
+require __DIR__ . '/../src/service/MetadataServiceException.php';
+require __DIR__ . '/../src/service/MetadataNotFoundException.php';
 
 // Register routes
 require __DIR__ . '/../src/controller/MetadataController.php';
