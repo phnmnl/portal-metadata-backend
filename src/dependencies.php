@@ -17,3 +17,9 @@ $container['logger'] = function ($c) {
     $logger->pushHandler(new Monolog\Handler\StreamHandler($settings['path'], $settings['level']));
     return $logger;
 };
+
+// MetadataService
+$container['metadataService'] = function ($c) {
+    $settings = $c->get('settings');
+    return new MetadataService($c['logger'], $settings["galaxy"]["url"], $settings["galaxy"]["api_key"]);
+};
