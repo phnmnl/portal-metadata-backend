@@ -98,6 +98,45 @@ class MetadataService
     }
 
 
+    /**
+     * @param $query
+     * @return array
+     */
+    function find($query = null)
+    {
+        $this->logger->debug("Performing FIND using query: " . json_encode($query));
+        $entity = MetadataQuery::create()->findByArray($query);
+        $this->logger->debug("Find executed... RESULT=" . json_encode($query));
+
+        return array("data" => $entity->toArray());
+    }
+
+    /**
+     * @param $id
+     * @return array
+     */
+    function findById($id = null)
+    {
+        $entity = MetadataQuery::create()->findPk($id);
+        return array("data" => empty($entity) ? array() : $entity->toArray());
+    }
+
+    /**
+     * @param $ids
+     * @return array
+     */
+    function findByIds($ids = null)
+    {
+        $entity = MetadataQuery::create()->findPks($ids);
+        return array("data" => empty($entity) ? array() : $entity->toArray());
+    }
+
+
+    /**
+     * @param $id
+     * @return array
+     * @throws MetadataNotFoundException
+     */
     function get($id)
     {
         $entity = MetadataQuery::create()->findPk($id);
