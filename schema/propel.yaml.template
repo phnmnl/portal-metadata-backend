@@ -4,9 +4,9 @@ propel:
           phenomenal:
               adapter: mysql
               classname: Propel\Runtime\Connection\ConnectionWrapper
-              dsn: "mysql:host=phenomenal;dbname=phenomenal"
-              user: backend-user
-              password: htgcsak
+              dsn: "mysql:host=localhost;dbname=phenomenal"
+              user: <MYSQL_USER>
+              password: <MYSQL_PASSWORD>
               attributes:
   runtime:
       defaultConnection: phenomenal

@@ -13,8 +13,8 @@ fi
 
 # update MYSQL settings
 sed "s/dsn: \"mysql:host=localhost;dbname=phenomenal\"/dsn: \"mysql:host=${MYSQL_HOST};dbname=phenomenal\"/" ${template_propel_file} | \
-sed "s/user: root/user: ${MYSQL_USER}/" | \
-sed "s/password: 12345678/password: ${MYSQL_PASSWORD}/" > ${current_propel_file}
+sed "s/user: <MYSQL_USER>/user: ${MYSQL_USER}/" | \
+sed "s/password: <MYSQL_PASSWORD>/password: ${MYSQL_PASSWORD}/" > ${current_propel_file}
 
 
 ########################################################################################################################
