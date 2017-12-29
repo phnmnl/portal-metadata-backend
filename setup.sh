@@ -31,3 +31,12 @@ fi
 # update GALAXY settings
 sed "s@\"url\" => \"<GALAXY_URL>\"@\"url\" => \"${GALAXY_URL}\"@g" ${settings_template_file} | \
 sed "s@\"api_key\" => \"<GALAXY_API_KEY>\"@\"api_key\" => \"${GALAXY_API_KEY}\"@g" > ${settings_file}
+
+
+
+########################################################################################################################
+# Initialize the MySQL Database
+########################################################################################################################
+propel sql:build --config-dir schema --schema-dir schema
+propel config:convert --config-dir schema --output-dir schema/generated-conf
+propel sql:insert --config-dir schema
