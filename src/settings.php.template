@@ -21,5 +21,11 @@ return [
             'path' => '/api',
             'version' => 'v1',
         ],
+
+        // Galaxy API settings
+        'galaxy' => [
+            "url" => "<GALAXY_URL>",
+            "api_key" => "<GALAXY_API_KEY>"
+        ]
     ],
 ];
