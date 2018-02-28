@@ -5,8 +5,8 @@ propel:
               adapter: mysql
               classname: Propel\Runtime\Connection\ConnectionWrapper
               dsn: "mysql:host=localhost;dbname=phenomenal"
-              user: root
-              password: 12345678
+              user: <MYSQL_USER>
+              password: <MYSQL_PASSWORD>
               attributes:
   runtime:
       defaultConnection: phenomenal
