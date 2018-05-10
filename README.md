@@ -1,26 +1,50 @@
-# Slim Framework 3 Skeleton Application
+# Portal Metadata Backend
 
-Use this skeleton application to quickly setup and start working on a new Slim Framework 3 application. This application uses the latest Slim 3 with the PHP-View template renderer. It also uses the Monolog logger.
+Version: 1.2.0
 
-This skeleton application was built for Composer. This makes setting up a new Slim Framework application quick and easy.
+## Description
 
-## Install the Application
+Metadata service for the PhenoMeNal Portal.
 
-Run this command from the directory in which you want to install your new Slim Framework application.
 
-    php composer.phar create-project slim/slim-skeleton [my-app-name]
+## Installation
 
-Replace `[my-app-name]` with the desired directory name for your new application. You'll want to:
+As a requirement to install the Portal Metadata Backend you need running instances of both MySQL and Galaxy servers. 
+Accordingly to their configuration, set the following parameters in your environement:
 
-* Point your virtual host document root to your new application's `public/` directory.
-* Ensure `logs/` is web writeable.
+* `MYSQL_USER`
+* `MYSQL_PASSWORD`
+* `MYSQL_HOST`
+* `GALAXY_URL`
+* `GALAXY_API_KEY`
 
-To run the application in development, you can also run this command. 
+... and run `./setup.sh` to configure your Metatada Backend.
 
-	php composer.phar start
+Finally, to start the server launch the following command:
 
-Run this command to run the test suite
+```
+start.sh <SERVICE-PORT>
+```
 
-	php composer.phar test
+... where `<SERVICE-PORT>` is the port which your metadata server will listen on.
 
-That's it! Now go build something cool.
+
+## Key features
+
+- Local Cloud Research Environment Deployment
+- Metadata server
+
+## Functionality
+
+- Other Tools
+
+
+## Tool Authors
+
+- Sijin He (EMBL-EBI)
+- Marco Enrico Piras (CRS4)
+
+
+## Git Repository
+
+- https://github.com/phnmnl/portal-metadata-backend.git
