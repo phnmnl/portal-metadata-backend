@@ -60,6 +60,13 @@ sed "s@\"api_key\" => \"<GALAXY_API_KEY>\"@\"api_key\" => \"${GALAXY_API_KEY}\"@
 ########################################################################################################################
 # Initialize the MySQL Database
 ########################################################################################################################
-propel sql:build --config-dir schema --schema-dir schema
-propel config:convert --config-dir schema --output-dir schema/generated-conf
-propel sql:insert --config-dir schema
+exists_db=$(mysql -u ${MYSQL_USER} -p${MYSQL_PASSWORD} -e "show databases;" | grep ${MYSQL_DATABASE} | wc -l)
+if [[ ${exists_db} == 0 ]]; then
+    info "Creating DB..."
+    propel sql:build --config-dir schema --schema-dir schema
+    propel config:convert --config-dir schema --output-dir schema/generated-conf
+    propel sql:insert --config-dir schema
+    info "DB created !!!"
+else
+    info "DB already initialized "
+fi
