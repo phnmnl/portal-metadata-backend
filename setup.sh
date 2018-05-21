@@ -1,5 +1,28 @@
 #!/usr/bin/env bash
 
+set -o nounset
+set -o errexit
+
+function info() {
+  echo -e "$@" >&2
+}
+
+function log() {
+  echo -e "$(date +"%F %T") [${BASH_SOURCE}] -- $@" >&2
+}
+
+function on_interrupt(){
+    log "Interrupted at line ${BASH_LINENO[0]} running command ${BASH_COMMAND}"
+}
+
+function on_error(){
+    log "Error at line ${BASH_LINENO[0]} running command ${BASH_COMMAND}"
+}
+
+# register trap handlers
+trap on_error ERR
+trap on_interrupt INT TERM
+
 ########################################################################################################################
 # Setup MYSQL connection
 ########################################################################################################################
