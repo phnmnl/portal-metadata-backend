@@ -60,8 +60,11 @@ sed "s@\"api_key\" => \"<GALAXY_API_KEY>\"@\"api_key\" => \"${GALAXY_API_KEY}\"@
 ########################################################################################################################
 # Initialize the MySQL Database
 ########################################################################################################################
-exists_db=$(mysql -u ${MYSQL_USER} -p${MYSQL_PASSWORD} -e "show databases;" | grep ${MYSQL_DATABASE} | wc -l)
-if [[ ${exists_db} == 0 ]]; then
+METADATA_TABLE_NAME="metadata"
+#exists_db=$(mysql -u ${MYSQL_USER} -p${MYSQL_PASSWORD} -e "show databases;" | grep ${MYSQL_DATABASE} | wc -l)
+exists_metadata_table=$(mysql -u ${MYSQL_USER} -p${MYSQL_PASSWORD} -e \
+  "select count(*) from information_schema.tables where table_schema='${MYSQL_DATABASE}' and table_name='${METADATA_TABLE_NAME}';" | grep -Eo '[0-1]')
+if [[ ${exists_metadata_table} -eq 0 ]]; then
     info "Creating DB..."
     propel sql:build --config-dir schema --schema-dir schema
     propel config:convert --config-dir schema --output-dir schema/generated-conf
