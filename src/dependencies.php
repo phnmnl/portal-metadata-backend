@@ -19,9 +19,9 @@ $container['logger'] = function ($c) {
 };
 
 // MetadataService
-$container['metadataService'] = function ($c) {
+$container['StatisticsService'] = function ($c) {
     $settings = $c->get('settings');
-    return new MetadataService($c['logger'], $settings["galaxy"]["url"], $settings["galaxy"]["api_key"]);
+    return new StatisticsService($c['logger'], $settings["galaxy"]["url"], $settings["galaxy"]["api_key"]);
 };
 
 
