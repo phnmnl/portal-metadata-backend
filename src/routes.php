@@ -1,10 +1,5 @@
 <?php
 
-$container = $app->getContainer();
-
-// Set up API URL prefix path
-$apiPathPrefix = $container->get('settings')['api']['path'].'/'.$container->get('settings')['api']['version'];
-
 // Default main page
 $app->get('/', function ($request, $response, $args) {
     // Sample log message
@@ -15,10 +10,10 @@ $app->get('/', function ($request, $response, $args) {
 });
 
 // Helper functions
-require __DIR__ . '/../src/share/helper.php';
-require __DIR__ . '/../src/share/jenkinsReport.php';
-require __DIR__ . '/../src/service/MetadataServiceException.php';
-require __DIR__ . '/../src/service/MetadataNotFoundException.php';
+require_once __DIR__ . '/../src/share/helper.php';
+require_once __DIR__ . '/../src/share/jenkinsReport.php';
+require_once __DIR__ . '/../src/service/MetadataServiceException.php';
+require_once __DIR__ . '/../src/service/MetadataNotFoundException.php';
 
 // Register routes
-require __DIR__ . '/../src/controller/MetadataController.php';
+require __DIR__ . '/../src/controller/v2/StatisticsController.php';
