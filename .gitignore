@@ -10,4 +10,5 @@ src/settings.php
 
 # ignore generated schema files
 generated-sql
+generated-classes
 schema/generated*
