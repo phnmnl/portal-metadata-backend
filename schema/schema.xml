@@ -1,11 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <database name="phenomenal" defaultIdMethod="native" defaultPhpNamingMethod="underscore">
-  <table name="metadata" idMethod="native" phpName="Metadata">
-    <column name="idmetadata" phpName="Idmetadata" type="VARCHAR" size="300" primaryKey="true" required="true"/>
-    <column name="isAcceptTermCondition" phpName="Isaccepttermcondition" type="TINYINT"/>
-    <column name="isRegisterGalaxy" phpName="Isregistergalaxy" type="TINYINT"/>
-    <vendor type="mysql">
-      <parameter name="Engine" value="InnoDB"/>
-    </vendor>
-  </table>
+    <table name="user" idMethod="native" phpName="User">
+        <column name="id" phpName="Id" type="VARCHAR" size="300" primaryKey="true" required="true"/>
+        <column name="hasAcceptedTermsConditions" phpName="HasAcceptedTermsConditions" type="BOOLEAN" default="FALSE"/>
+        <column name="hasGalaxyAccount" phpName="HasGalaxyAccount" type="BOOLEAN" default="FALSE"/>
+        <column name="firstAccess" phpName="FirstAccess" type="TIMESTAMP"/>
+        <column name="lastAccess" phpName="LastAccess" type="TIMESTAMP"/>
+        <column name="numberOfAccesses" phpName="NumberOfAccesses" type="INTEGER" default="0"/>
+        <vendor type="mysql">
+            <parameter name="Engine" value="InnoDB"/>
+        </vendor>
+    </table>
+    <table name="deployment" idMethod="native" phpName="Deployment">
+        <column name="id" phpName="Id" type="integer" required="true" primaryKey="true" autoIncrement="true" />
+        <column name="user" phpName="User" type="VARCHAR" size="300" required="true"/>
+        <column name="name" phpName="name" type="VARCHAR" size="300" required="true"/>
+        <column name="reference" phpName="Reference" type="VARCHAR" size="300" required="true"/>
+        <column name="provider" phpName="Provider" type="VARCHAR" size="300" required="true"/>
+        <column name="created" phpName="Created" type="TIMESTAMP"/>
+        <column name="deployed" phpName="Deployed" type="TIMESTAMP"/>
+        <column name="destroyed" phpName="Destroyed" type="TIMESTAMP"/>
+        <column name="failed" phpName="Failed" type="TIMESTAMP"/>
+        <column name="configuration" phpName="Configuration" type="CLOB"/>
+        <!-- UNIQUE constraint on <USER,DEPLOYMENT> -->
+
+        <unique>
+            <unique-column name="user" />
+            <unique-column name="reference" />
+        </unique>
+        <!-- FOREIGN KEY constraint on USER.ID -->
+        <foreign-key foreignTable="user" skipSql="true" phpName="DeploymentUser" onDelete="RESTRICT" >
+            <reference local="user" foreign="id" />
+        </foreign-key>
+        <vendor type="mysql">
+            <parameter name="Engine" value="InnoDB"/>
+        </vendor>
+    </table>
 </database>
