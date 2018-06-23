@@ -11,9 +11,21 @@ $container['renderer'] = function ($c) {
 
 // monolog
 $container['logger'] = function ($c) {
+    // logger settings
     $settings = $c->get('settings')['logger'];
+    // Instantiate the global logger
     $logger = new Monolog\Logger($settings['name']);
-    $logger->pushProcessor(new Monolog\Processor\UidProcessor());
+    // Use the application settings
+    $handler = new Monolog\Handler\ErrorLogHandler();
+    $handler->setLevel($settings['level']);
+    $logger->pushHandler($handler);
+
+//    Uncomment to enable a different log format
+//    $output = "%datetime% [%level_name%]: %message% %context% %extra%\n";
+//    $formatter = new Monolog\Formatter\LineFormatter($output);
+//    $handler->setFormatter($formatter);
+
+    // Enable persistent logs
     $logger->pushHandler(new Monolog\Handler\StreamHandler($settings['path'], $settings['level']));
     return $logger;
 };
