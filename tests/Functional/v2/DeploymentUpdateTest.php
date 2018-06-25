@@ -51,7 +51,7 @@ class DeploymentUpdateTest extends DeploymentTestCase
 
         try {
             $response = $this->runApp('PUT',
-                '/statistics/users/' . $this->TEST_USER_ID . "/deployments/" . $reference, $data);
+                '/users/' . $this->TEST_USER_ID . "/deployments/" . $reference, $data);
             $this->logger->debug("Update response: " . (string)$response->getBody());
             $this->assertEquals(200, $response->getStatusCode());
 

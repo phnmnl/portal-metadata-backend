@@ -15,7 +15,7 @@ class DeploymentCreateTest extends DeploymentTestCase
         $data = $this->buildTestDeploymentData();
         try {
             $response = $this->runApp('POST',
-                '/statistics/users/' . $this->TEST_USER_ID . "/deployments", $data);
+                '/users/' . $this->TEST_USER_ID . "/deployments", $data);
             $this->logger->debug("Add response: " . (string)$response->getBody());
             $this->assertEquals(200, $response->getStatusCode());
 

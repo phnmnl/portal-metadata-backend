@@ -34,7 +34,7 @@ class DeploymentFindTest extends DeploymentTestCase
     {
         try {
             $response = $this->runApp('GET',
-                '/statistics/users/' . $this->TEST_USER_ID . "/deployments");
+                '/users/' . $this->TEST_USER_ID . "/deployments");
             $this->logger->debug("Find response: " . (string)$response->getBody());
             $this->assertEquals(200, $response->getStatusCode());
 
@@ -57,7 +57,7 @@ class DeploymentFindTest extends DeploymentTestCase
     {
         try {
             $response = $this->runApp('GET',
-                '/statistics/users/' . $this->TEST_USER_ID . "/deployments/" . $this->TEST_DEPLOYMENT_REFERENCE);
+                '/users/' . $this->TEST_USER_ID . "/deployments/" . $this->TEST_DEPLOYMENT_REFERENCE);
             $this->logger->debug("Find response: " . (string)$response->getBody());
             $this->assertEquals(200, $response->getStatusCode());
 

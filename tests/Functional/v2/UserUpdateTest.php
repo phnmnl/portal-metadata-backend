@@ -17,7 +17,7 @@ class UserUpdateTest extends BaseTestCase
             'firstAccess' => time() - 1 // "-1" to simulate a previous access
         );
         try {
-            $response = $this->runApp('POST', '/statistics/users', $user);
+            $response = $this->runApp('POST', '/users', $user);
             $this->logger->debug("Add response: " . (string)$response->getBody());
             $this->assertEquals(200, $response->getStatusCode());
         } catch (MethodNotAllowedException $e) {
@@ -31,7 +31,7 @@ class UserUpdateTest extends BaseTestCase
     {
         parent::tearDown();
         try {
-            $response = $this->runApp('DELETE', '/statistics/users/' . $this->TEST_USER_ID);
+            $response = $this->runApp('DELETE', '/users/' . $this->TEST_USER_ID);
             $this->logger->debug("Delete response: " . (string)$response->getBody());
             $this->assertEquals(200, $response->getStatusCode());
         } catch (MethodNotAllowedException $e) {
@@ -56,7 +56,7 @@ class UserUpdateTest extends BaseTestCase
 
             // run the update
             $response = $this->runApp('PUT',
-                "/statistics/users/$this->TEST_USER_ID", $data);
+                "/users/$this->TEST_USER_ID", $data);
             $this->logger->debug("Add response: " . (string)$response->getBody());
             $this->assertEquals(200, $response->getStatusCode());
 

@@ -17,7 +17,7 @@ class UserDeleteTest extends BaseTestCase
             'firstAccess' => time()
         );
         try {
-            $response = $this->runApp('POST', '/statistics/users', $user);
+            $response = $this->runApp('POST', '/users', $user);
             $this->logger->debug("Add response: " . (string)$response->getBody());
             $this->assertEquals(200, $response->getStatusCode());
         } catch (MethodNotAllowedException $e) {
@@ -30,7 +30,7 @@ class UserDeleteTest extends BaseTestCase
     public function testDeleteUser()
     {
         try {
-            $response = $this->runApp('DELETE', '/statistics/users/' . $this->TEST_USER_ID);
+            $response = $this->runApp('DELETE', '/users/' . $this->TEST_USER_ID);
             $this->logger->debug("Delete response: " . (string)$response->getBody());
             $this->assertEquals(200, $response->getStatusCode());
         } catch (MethodNotAllowedException $e) {

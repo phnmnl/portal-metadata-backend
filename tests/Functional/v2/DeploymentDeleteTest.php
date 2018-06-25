@@ -33,7 +33,7 @@ class DeploymentDeleteTest extends DeploymentTestCase
         $reference = $this->test_deployment_data->Reference;
         try {
             $response = $this->runApp('DELETE',
-                '/statistics/users/' . $this->TEST_USER_ID . "/deployments/" . $reference);
+                '/users/' . $this->TEST_USER_ID . "/deployments/" . $reference);
             $this->logger->debug("Delete response: " . (string)$response->getBody());
             $this->assertEquals(200, $response->getStatusCode());
 
