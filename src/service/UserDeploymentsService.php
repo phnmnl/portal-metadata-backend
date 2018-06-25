@@ -140,29 +140,27 @@ class UserDeploymentsService
     function getUser($id)
     {
         $entity = UserQuery::create()->findOneById($id);
-
-        $data = array();
-
         if ($entity == null) {
             #$data = helper::getError(404, 'The ' . $this->primaryKey . ' of the ' . $this->tableName . ' was not found');
-            throw new MetadataNotFoundException('The ' . $this->primaryKey . ' of the ' . $this->tableName . ' was not found');
+            $data = helper::getError(404, 'No user found with ID ' . $id);
         } else {
+            $data = array();
             $data['data'] = $entity->toArray();
         }
-
         return $data;
     }
 
-    function createUser($array)
+    function createUser($userInfo)
     {
-        $this->logger->debug(" data: " . gettype($array));
+        $this->logger->debug(" data: " . gettype($userInfo) . " --- " . json_encode($userInfo));
         $data = array();
         try {
-            $user = new User($array);
+            $user = new User($userInfo);
             $user->save();
             $data['data'] = $user->toArray();
         } catch (Exception $e) {
             $data = helper::getError(409, $e->getMessage());
+            $this->logger->error($e->getTraceAsString());
         } finally {
             return $data;
         }
