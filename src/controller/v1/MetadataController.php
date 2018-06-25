@@ -17,7 +17,7 @@ require __DIR__ . '/../service/MetadataService.php';
 
 $app->get($apiPathPrefix . '/metadata/getJenkinsReport', function ($request, $response) {
 
-    $service = $this->get('StatisticsService');
+    $service = $this->get('UserDeploymentsService');
 
     return $response
         ->withHeader('Access-Control-Allow-Origin', 'http://localhost:3000')
@@ -29,7 +29,7 @@ $app->get($apiPathPrefix . '/metadata/getJenkinsReport', function ($request, $re
 
 $app->get($apiPathPrefix . '/metadata/getGoogleKey', function ($request, $response) {
 
-    $service = $this->get('StatisticsService');
+    $service = $this->get('UserDeploymentsService');
 
     return $response
         ->withHeader('Access-Control-Allow-Origin', 'http://localhost:3000')
@@ -50,7 +50,7 @@ $app->get(/**
     $logger = $this->get("logger");
     $logger->debug("Query: " . json_encode($query));
 
-    $service = $this->get('StatisticsService');
+    $service = $this->get('UserDeploymentsService');
 
     $data = null;
     if(isset($query["id"]))
@@ -74,7 +74,7 @@ $app->get(/**
 $app->get($apiPathPrefix . '/metadata/{id}', function ($request, $response) {
     $id = $request->getAttribute('id');
 
-    $service = $this->get('StatisticsService');
+    $service = $this->get('UserDeploymentsService');
 
     return $response
         ->withHeader('Access-Control-Allow-Origin', 'http://localhost:3000')
@@ -87,7 +87,7 @@ $app->get($apiPathPrefix . '/metadata/{id}', function ($request, $response) {
 $app->post($apiPathPrefix . '/metadata/createGalaxyUser', function ($request, $response) {
 
     $parsedBody = $request->getParsedBody();
-    $service = $this->get('StatisticsService');
+    $service = $this->get('UserDeploymentsService');
     return $response->withJson($service->createGalaxyUser($parsedBody));
 
 });
@@ -95,7 +95,7 @@ $app->post($apiPathPrefix . '/metadata/createGalaxyUser', function ($request, $r
 $app->post($apiPathPrefix . '/metadata', function ($request, $response) {
 
     $parsedBody = $request->getParsedBody();
-    $service = $this->get('StatisticsService');
+    $service = $this->get('UserDeploymentsService');
 
     return $response
         ->withHeader('Access-Control-Allow-Origin', 'http://localhost:3000')
@@ -107,7 +107,7 @@ $app->post($apiPathPrefix . '/metadata', function ($request, $response) {
 
 $app->put($apiPathPrefix . '/metadata', function ($request, $response) {
     $parsedBody = $request->getParsedBody();
-    $service = $this->get('StatisticsService');
+    $service = $this->get('UserDeploymentsService');
 
     return $response->withHeader('Access-Control-Allow-Origin', 'http://localhost:3000')
         ->withHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Origin, Authorization')
@@ -119,7 +119,7 @@ $app->put($apiPathPrefix . '/metadata', function ($request, $response) {
 $app->delete($apiPathPrefix . '/metadata/{id}', function ($request, $response) {
     $id = $request->getAttribute('id');
 
-    $service = $this->get('StatisticsService');
+    $service = $this->get('UserDeploymentsService');
 
     return $response
         ->withHeader('Access-Control-Allow-Origin', 'http://localhost:3000')
