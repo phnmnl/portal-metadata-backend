@@ -52,6 +52,21 @@ $app->get(buildPath($PREFIX, '/test'), function ($request, $response) {
         ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
         ->withJson(array("prova" => "ok"));
 
+$app->get(buildPath($PREFIX, '/users/{id}'), function ($request, $response) {
+
+    $logger = $this->get('logger');
+    $service = $this->get('UserDeploymentsService');
+
+    $id = $request->getAttribute('id');
+    $logger->debug("ID of the user: " . $id);
+
+    $data = $service->getUser($id);
+
+    return $response
+        ->withHeader('Access-Control-Allow-Origin', 'http://localhost:3000')
+        ->withHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Origin, Authorization')
+        ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+        ->withJson($data);
 });
 
 
