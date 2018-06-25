@@ -16,4 +16,4 @@ require_once __DIR__ . '/../src/service/MetadataServiceException.php';
 require_once __DIR__ . '/../src/service/MetadataNotFoundException.php';
 
 // Register routes
-require __DIR__ . '/../src/controller/v2/StatisticsController.php';
+require __DIR__ . '/../src/controller/v2/APIController.php';
