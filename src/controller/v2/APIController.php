@@ -51,6 +51,23 @@ $app->get(buildPath($PREFIX, '/test'), function ($request, $response) {
         ->withHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Origin, Authorization')
         ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
         ->withJson(array("prova" => "ok"));
+});
+
+/**
+ * Create a new Galaxy user
+ */
+$app->post(buildPath('/galaxy', '/users/{id}'), function ($request, $response) {
+
+    $logger = $this->get('logger');
+    $service = $this->get('UserDeploymentsService');
+
+    $id = $request->getAttribute('id');
+    $logger->debug("ID of the user: " . $id);
+    $parsedBody = $request->getParsedBody();
+
+    return $response->withJson($service->createGalaxyUser($id, $parsedBody));
+});
+
 
 $app->get(buildPath($PREFIX, '/users/{id}'), function ($request, $response) {
 
