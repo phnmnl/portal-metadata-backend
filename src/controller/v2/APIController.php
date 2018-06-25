@@ -2,10 +2,10 @@
 // include API configuration
 require_once __DIR__ . '/config.php';
 // include required service
-require_once __DIR__ . '/../../service/StatisticsService.php';
+require_once __DIR__ . '/../../service/UserDeploymentsService.php';
 
 // API endpoint prefix
-$PREFIX = "/statistics";
+$PREFIX = "";
 
 
 /**
@@ -13,7 +13,7 @@ $PREFIX = "/statistics";
  */
 $app->get(buildPath($PREFIX, '/jenkins-report'), function ($request, $response) {
 
-    $service = $this->get('StatisticsService');
+    $service = $this->get('UserDeploymentsService');
 
     return $response
         ->withHeader('Access-Control-Allow-Origin', 'http://localhost:3000')
@@ -28,7 +28,7 @@ $app->get(buildPath($PREFIX, '/jenkins-report'), function ($request, $response) 
  */
 $app->get(buildPath($PREFIX, '/google-key'), function ($request, $response) {
 
-    $service = $this->get('StatisticsService');
+    $service = $this->get('UserDeploymentsService');
 
     return $response
         ->withHeader('Access-Control-Allow-Origin', 'http://localhost:3000')
@@ -44,7 +44,7 @@ $app->get(buildPath($PREFIX, '/google-key'), function ($request, $response) {
  */
 $app->get(buildPath($PREFIX, '/test'), function ($request, $response) {
 
-    $service = $this->get('StatisticsService');
+    $service = $this->get('UserDeploymentsService');
 
     return $response
         ->withHeader('Access-Control-Allow-Origin', 'http://localhost:3000')
@@ -61,11 +61,10 @@ $app->get(buildPath($PREFIX, '/test'), function ($request, $response) {
 $app->post(buildPath($PREFIX, '/users'), function ($request, $response) {
 
     $logger = $this->get('logger');
+    $service = $this->get('UserDeploymentsService');
 
     $parsedBody = $request->getParsedBody();
-    $logger->info("Parsed body", $parsedBody);
-    $service = $this->get('StatisticsService');
-
+    $logger->info("Parsed data - CREATE USER: " . json_encode($parsedBody));
     $data = $service->createUser($parsedBody);
 
     return $response
@@ -86,7 +85,7 @@ $app->delete(buildPath($PREFIX, '/users/{id}'), function ($request, $response) {
     $id = $request->getAttribute('id');
     $logger->debug("ID of the user to delete: " . $id);
 
-    $service = $this->get('StatisticsService');
+    $service = $this->get('UserDeploymentsService');
     $result = $service->deleteUser($id);
     $logger->debug("Result: " . json_encode($result));
 
@@ -106,7 +105,7 @@ $app->put(buildPath($PREFIX, '/users/{id}'), function ($request, $response) {
     // get the logger
     $logger = $this->get('logger');
     // get the service
-    $service = $this->get('StatisticsService');
+    $service = $this->get('UserDeploymentsService');
 
     $logger->debug("Function update from the controller....");
 
@@ -130,7 +129,7 @@ $app->put(buildPath($PREFIX, '/users/{id}'), function ($request, $response) {
 $app->get(buildPath($PREFIX, '/users/{id}/deployments'), function ($request, $response) {
 
     $logger = $this->get('logger');
-    $service = $this->get('StatisticsService');
+    $service = $this->get('UserDeploymentsService');
 
     // reqd parameters
     $id = $request->getAttribute('id');
@@ -149,7 +148,7 @@ $app->get(buildPath($PREFIX, '/users/{id}/deployments'), function ($request, $re
 $app->get(buildPath($PREFIX, '/users/{id}/deployments/{reference}'), function ($request, $response) {
 
     $logger = $this->get('logger');
-    $service = $this->get('StatisticsService');
+    $service = $this->get('UserDeploymentsService');
 
     // reqd parameters
     $id = $request->getAttribute('id');
@@ -174,7 +173,7 @@ $app->get(buildPath($PREFIX, '/users/{id}/deployments/{reference}'), function ($
 $app->post(buildPath($PREFIX, '/users/{id}/deployments'), function ($request, $response) {
 
     $logger = $this->get('logger');
-    $service = $this->get('StatisticsService');
+    $service = $this->get('UserDeploymentsService');
 
     // reqd parameters
     $id = $request->getAttribute('id');
@@ -198,7 +197,7 @@ $app->put(buildPath($PREFIX, '/users/{id}/deployments/{reference}'), function ($
     // get the logger
     $logger = $this->get('logger');
     // get the service
-    $service = $this->get('StatisticsService');
+    $service = $this->get('UserDeploymentsService');
 
     $logger->debug("Function update from the controller....");
 
@@ -233,7 +232,7 @@ $app->delete(buildPath($PREFIX, '/users/{id}/deployments/{reference}'), function
     $logger->debug("ID of the deployment user: " . $id);
     $logger->debug("ID of the deployment: " . $reference);
 
-    $service = $this->get('StatisticsService');
+    $service = $this->get('UserDeploymentsService');
     $result = $service->deleteDeployment($id, $reference);
     $logger->debug("Result: " . json_encode($result));
 
