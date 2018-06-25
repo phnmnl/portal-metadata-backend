@@ -37,20 +37,27 @@ class UserDeploymentsService
     }
 
     /**
-     * @param $array
+     * @param $userId
+     * @param $galaxyAccount
      * @return array|mixed
      * @throws MetadataServiceException
+     * @throws \Propel\Runtime\Exception\PropelException
      */
-    function createGalaxyUser($array)
+    function createGalaxyUser($userId, $galaxyAccount)
     {
         $data = array();
-        $entity = MetadataQuery::create()->findPk($array['token']);
+        $entity = UserQuery::create()->findOneById($userId);
 
         if ($entity == null) {
-            $data[] = helper::getError(404, 'The ' . $this->primaryKey . ' of the ' . $this->tableName . ' was not found');
+            $data[] = helper::getError(
+                404, 'The ' . $this->primaryKey . ' of the ' . $this->tableName . ' was not found');
         } else {
             $url = $this->galaxy_url . '/api/users?key=' . $this->galaxy_api_key;
-            $fields = array('email' => $array['email'], 'password' => $array['password'], 'username' => $array['username']);
+            $fields = array(
+                'email' => $galaxyAccount['email'],
+                'username' => $galaxyAccount['username'],
+                'password' => $galaxyAccount['password']
+            );
 
             $fields_string = '';
             foreach ($fields as $key => $value) {
@@ -75,26 +82,36 @@ class UserDeploymentsService
             $data = json_decode($result, true);
             $this->logger->debug("Array correctly decoded!");
 
-            if ($data && !isset($data["err_code"]) || $data['err_code'] == '400008') {
-                // update to true 'setIsregistergalaxy' when error_code=400008,
+            if ($data && (!isset($data["err_code"]) || $this->isAlreadyRegisteredEmail($data))) {
+                // update to true 'HasGalaxyAccount' when error_code=400008,
                 // that implies an already registered user
-                $entity->setIsaccepttermcondition(true);
-                $entity->setIsregistergalaxy(true);
+                $entity->setHasGalaxyAccount(true);
                 $entity->save();
                 $data['data'] = $entity->toArray();
             }
 
             if ($data && isset($data["err_code"])) {
-                $this->logger->debug("Setting error CODE");
+                $this->logger->debug("Setting error CODE: " . $data["err_code"]);
                 throw new MetadataServiceException(
                     $data[/** @lang text */
-                    "err_msg"], $data['err_code'] == '400008' ? 409 : 500, $data);
+                    "err_msg"], $this->isAlreadyRegisteredEmail($data) ? 409 : 500, $data);
             }
             $this->logger->debug("Return from createGalaxyUser method!!!");
         }
 
         $this->logger->debug("Type of the DATA object: " . gettype($data));
         return $data;
+    }
+
+    private function isAlreadyRegisteredEmail($data)
+    {
+        $msg_pattern = 'User with that email already exists.';
+        $length = strlen($msg_pattern);
+        $result = isset($data['err_code'])
+            && ($data['err_code'] == '400008')
+            && (substr($data['err_msg'], 0, $length) === $msg_pattern);
+        $this->logger->debug("the email already exists:" . ($result ? "TRUE" : "FALSE"));
+        return $result;
     }
 
 
