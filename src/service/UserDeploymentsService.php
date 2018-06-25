@@ -1,7 +1,7 @@
 <?php
 
 
-class StatisticsService
+class UserDeploymentsService
 {
 
     private $tableName = 'Metadata';
