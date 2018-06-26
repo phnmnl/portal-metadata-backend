@@ -1,7 +1,7 @@
 <?php
 
 
-class MetadataServiceException extends Exception
+class UserDeploymentsServiceException extends Exception
 {
     protected $data;
 

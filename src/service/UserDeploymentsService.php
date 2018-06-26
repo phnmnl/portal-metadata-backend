@@ -40,7 +40,7 @@ class UserDeploymentsService
      * @param $userId
      * @param $galaxyAccount
      * @return array|mixed
-     * @throws MetadataServiceException
+     * @throws UserDeploymentsServiceException
      * @throws \Propel\Runtime\Exception\PropelException
      */
     function createGalaxyUser($userId, $galaxyAccount)
@@ -92,7 +92,7 @@ class UserDeploymentsService
 
             if ($data && isset($data["err_code"])) {
                 $this->logger->debug("Setting error CODE: " . $data["err_code"]);
-                throw new MetadataServiceException(
+                throw new UserDeploymentsServiceException(
                     $data[/** @lang text */
                     "err_msg"], $this->isAlreadyRegisteredEmail($data) ? 409 : 500, $data);
             }
@@ -152,7 +152,6 @@ class UserDeploymentsService
     /**
      * @param $id
      * @return array
-     * @throws MetadataNotFoundException
      */
     function getUser($id)
     {

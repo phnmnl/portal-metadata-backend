@@ -12,7 +12,7 @@ $app->get('/', function ($request, $response, $args) {
 // Helper functions
 require_once __DIR__ . '/../src/share/helper.php';
 require_once __DIR__ . '/../src/share/jenkinsReport.php';
-require_once __DIR__ . '/../src/service/MetadataServiceException.php';
+require_once __DIR__ . '/../src/service/UserDeploymentsServiceException.php';
 require_once __DIR__ . '/../src/service/MetadataNotFoundException.php';
 
 // Register routes

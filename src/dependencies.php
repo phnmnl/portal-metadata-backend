@@ -42,7 +42,7 @@ $container['errorHandler'] = function ($c) {
     return function ($request, $response, $exception) use ($c) {
         $c['logger']->debug("Handling error with custom phpErrorHandler");
 
-        if ($exception instanceof MetadataServiceException) {
+        if ($exception instanceof UserDeploymentsServiceException) {
             $c['logger']->debug("instance of MetadataServiceException");
             return $c['response']->withJson($exception->toArray(), $exception->getCode());
         } else
