@@ -1,9 +1,9 @@
 <?php
 
-use Base\MetadataQuery as BaseMetadataQuery;
+use Base\DeploymentQuery as BaseDeploymentQuery;
 
 /**
- * Skeleton subclass for performing query and update operations on the 'metadata' table.
+ * Skeleton subclass for performing query and update operations on the 'deployment' table.
  *
  *
  *
@@ -12,7 +12,7 @@ use Base\MetadataQuery as BaseMetadataQuery;
  * long as it does not already exist in the output directory.
  *
  */
-class MetadataQuery extends BaseMetadataQuery
+class DeploymentQuery extends BaseDeploymentQuery
 {
 
 }

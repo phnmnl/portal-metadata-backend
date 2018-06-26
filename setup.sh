@@ -1,5 +1,28 @@
 #!/usr/bin/env bash
 
+set -o nounset
+set -o errexit
+
+function info() {
+  echo -e "$@" >&2
+}
+
+function log() {
+  echo -e "$(date +"%F %T") [${BASH_SOURCE}] -- $@" >&2
+}
+
+function on_interrupt(){
+    log "Interrupted at line ${BASH_LINENO[0]} running command ${BASH_COMMAND}"
+}
+
+function on_error(){
+    log "Error at line ${BASH_LINENO[0]} running command ${BASH_COMMAND}"
+}
+
+# register trap handlers
+trap on_error ERR
+trap on_interrupt INT TERM
+
 ########################################################################################################################
 # Setup MYSQL connection
 ########################################################################################################################
@@ -37,6 +60,22 @@ sed "s@\"api_key\" => \"<GALAXY_API_KEY>\"@\"api_key\" => \"${GALAXY_API_KEY}\"@
 ########################################################################################################################
 # Initialize the MySQL Database
 ########################################################################################################################
-propel sql:build --config-dir schema --schema-dir schema
+METADATA_TABLE_NAME="user"
+#exists_db=$(mysql -u ${MYSQL_USER} -p${MYSQL_PASSWORD} -e "show databases;" | grep ${MYSQL_DATABASE} | wc -l)
+exists_metadata_table=$(mysql -u ${MYSQL_USER} -p${MYSQL_PASSWORD} -e \
+  "select count(*) from information_schema.tables where table_schema='${MYSQL_DATABASE}' and table_name='${METADATA_TABLE_NAME}';" | grep -Eo '[0-1]')
+info "Generating DB schema..."
+propel sql:build --config-dir schema --schema-dir schema --output-dir schema
 propel config:convert --config-dir schema --output-dir schema/generated-conf
-propel sql:insert --config-dir schema
+info "Generating DB schema... DONE"
+if [[ ${exists_metadata_table} -eq 0 ]]; then
+    info "Creating DB..."
+    propel sql:insert --config-dir schema --sql-dir schema
+    info "Creating DB... DONE"
+else
+    info "DB already initialized "
+    info "Generating migrations..."
+    propel diff --config-dir schema --schema-dir schema --output-dir schema/migrations
+    info "Applying migrations ..."
+    propel migrate --config-dir schema --output-dir schema/migrations
+fi

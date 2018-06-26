@@ -2,8 +2,8 @@
 
 namespace Map;
 
-use \Metadata;
-use \MetadataQuery;
+use \Deployment;
+use \DeploymentQuery;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\InstancePoolTrait;
@@ -16,7 +16,7 @@ use Propel\Runtime\Map\TableMapTrait;
 
 
 /**
- * This class defines the structure of the 'metadata' table.
+ * This class defines the structure of the 'deployment' table.
  *
  *
  *
@@ -26,7 +26,7 @@ use Propel\Runtime\Map\TableMapTrait;
  * (i.e. if it's a text column type).
  *
  */
-class MetadataTableMap extends TableMap
+class DeploymentTableMap extends TableMap
 {
     use InstancePoolTrait;
     use TableMapTrait;
@@ -34,7 +34,7 @@ class MetadataTableMap extends TableMap
     /**
      * The (dot-path) name of this class
      */
-    const CLASS_NAME = '.Map.MetadataTableMap';
+    const CLASS_NAME = '.Map.DeploymentTableMap';
 
     /**
      * The default database name for this class
@@ -44,22 +44,22 @@ class MetadataTableMap extends TableMap
     /**
      * The table name for this class
      */
-    const TABLE_NAME = 'metadata';
+    const TABLE_NAME = 'deployment';
 
     /**
      * The related Propel class for this table
      */
-    const OM_CLASS = '\\Metadata';
+    const OM_CLASS = '\\Deployment';
 
     /**
      * A class that can be returned by this tableMap
      */
-    const CLASS_DEFAULT = 'Metadata';
+    const CLASS_DEFAULT = 'Deployment';
 
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 3;
+    const NUM_COLUMNS = 10;
 
     /**
      * The number of lazy-loaded columns
@@ -69,22 +69,57 @@ class MetadataTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 3;
+    const NUM_HYDRATE_COLUMNS = 10;
 
     /**
-     * the column name for the idmetadata field
+     * the column name for the id field
      */
-    const COL_IDMETADATA = 'metadata.idmetadata';
+    const COL_ID = 'deployment.id';
 
     /**
-     * the column name for the isAcceptTermCondition field
+     * the column name for the user field
      */
-    const COL_ISACCEPTTERMCONDITION = 'metadata.isAcceptTermCondition';
+    const COL_USER = 'deployment.user';
 
     /**
-     * the column name for the isRegisterGalaxy field
+     * the column name for the name field
      */
-    const COL_ISREGISTERGALAXY = 'metadata.isRegisterGalaxy';
+    const COL_NAME = 'deployment.name';
+
+    /**
+     * the column name for the reference field
+     */
+    const COL_REFERENCE = 'deployment.reference';
+
+    /**
+     * the column name for the provider field
+     */
+    const COL_PROVIDER = 'deployment.provider';
+
+    /**
+     * the column name for the created field
+     */
+    const COL_CREATED = 'deployment.created';
+
+    /**
+     * the column name for the deployed field
+     */
+    const COL_DEPLOYED = 'deployment.deployed';
+
+    /**
+     * the column name for the destroyed field
+     */
+    const COL_DESTROYED = 'deployment.destroyed';
+
+    /**
+     * the column name for the failed field
+     */
+    const COL_FAILED = 'deployment.failed';
+
+    /**
+     * the column name for the configuration field
+     */
+    const COL_CONFIGURATION = 'deployment.configuration';
 
     /**
      * The default string format for model objects of the related table
@@ -98,11 +133,11 @@ class MetadataTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Idmetadata', 'Isaccepttermcondition', 'Isregistergalaxy', ),
-        self::TYPE_CAMELNAME     => array('idmetadata', 'isaccepttermcondition', 'isregistergalaxy', ),
-        self::TYPE_COLNAME       => array(MetadataTableMap::COL_IDMETADATA, MetadataTableMap::COL_ISACCEPTTERMCONDITION, MetadataTableMap::COL_ISREGISTERGALAXY, ),
-        self::TYPE_FIELDNAME     => array('idmetadata', 'isAcceptTermCondition', 'isRegisterGalaxy', ),
-        self::TYPE_NUM           => array(0, 1, 2, )
+        self::TYPE_PHPNAME       => array('Id', 'User', 'name', 'Reference', 'Provider', 'Created', 'Deployed', 'Destroyed', 'Failed', 'Configuration', ),
+        self::TYPE_CAMELNAME     => array('id', 'user', 'name', 'reference', 'provider', 'created', 'deployed', 'destroyed', 'failed', 'configuration', ),
+        self::TYPE_COLNAME       => array(DeploymentTableMap::COL_ID, DeploymentTableMap::COL_USER, DeploymentTableMap::COL_NAME, DeploymentTableMap::COL_REFERENCE, DeploymentTableMap::COL_PROVIDER, DeploymentTableMap::COL_CREATED, DeploymentTableMap::COL_DEPLOYED, DeploymentTableMap::COL_DESTROYED, DeploymentTableMap::COL_FAILED, DeploymentTableMap::COL_CONFIGURATION, ),
+        self::TYPE_FIELDNAME     => array('id', 'user', 'name', 'reference', 'provider', 'created', 'deployed', 'destroyed', 'failed', 'configuration', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, )
     );
 
     /**
@@ -112,11 +147,11 @@ class MetadataTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Idmetadata' => 0, 'Isaccepttermcondition' => 1, 'Isregistergalaxy' => 2, ),
-        self::TYPE_CAMELNAME     => array('idmetadata' => 0, 'isaccepttermcondition' => 1, 'isregistergalaxy' => 2, ),
-        self::TYPE_COLNAME       => array(MetadataTableMap::COL_IDMETADATA => 0, MetadataTableMap::COL_ISACCEPTTERMCONDITION => 1, MetadataTableMap::COL_ISREGISTERGALAXY => 2, ),
-        self::TYPE_FIELDNAME     => array('idmetadata' => 0, 'isAcceptTermCondition' => 1, 'isRegisterGalaxy' => 2, ),
-        self::TYPE_NUM           => array(0, 1, 2, )
+        self::TYPE_PHPNAME       => array('Id' => 0, 'User' => 1, 'name' => 2, 'Reference' => 3, 'Provider' => 4, 'Created' => 5, 'Deployed' => 6, 'Destroyed' => 7, 'Failed' => 8, 'Configuration' => 9, ),
+        self::TYPE_CAMELNAME     => array('id' => 0, 'user' => 1, 'name' => 2, 'reference' => 3, 'provider' => 4, 'created' => 5, 'deployed' => 6, 'destroyed' => 7, 'failed' => 8, 'configuration' => 9, ),
+        self::TYPE_COLNAME       => array(DeploymentTableMap::COL_ID => 0, DeploymentTableMap::COL_USER => 1, DeploymentTableMap::COL_NAME => 2, DeploymentTableMap::COL_REFERENCE => 3, DeploymentTableMap::COL_PROVIDER => 4, DeploymentTableMap::COL_CREATED => 5, DeploymentTableMap::COL_DEPLOYED => 6, DeploymentTableMap::COL_DESTROYED => 7, DeploymentTableMap::COL_FAILED => 8, DeploymentTableMap::COL_CONFIGURATION => 9, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'user' => 1, 'name' => 2, 'reference' => 3, 'provider' => 4, 'created' => 5, 'deployed' => 6, 'destroyed' => 7, 'failed' => 8, 'configuration' => 9, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, )
     );
 
     /**
@@ -129,16 +164,23 @@ class MetadataTableMap extends TableMap
     public function initialize()
     {
         // attributes
-        $this->setName('metadata');
-        $this->setPhpName('Metadata');
+        $this->setName('deployment');
+        $this->setPhpName('Deployment');
         $this->setIdentifierQuoting(false);
-        $this->setClassName('\\Metadata');
+        $this->setClassName('\\Deployment');
         $this->setPackage('');
-        $this->setUseIdGenerator(false);
+        $this->setUseIdGenerator(true);
         // columns
-        $this->addPrimaryKey('idmetadata', 'Idmetadata', 'VARCHAR', true, 300, null);
-        $this->addColumn('isAcceptTermCondition', 'Isaccepttermcondition', 'TINYINT', false, null, null);
-        $this->addColumn('isRegisterGalaxy', 'Isregistergalaxy', 'TINYINT', false, null, null);
+        $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
+        $this->addForeignKey('user', 'User', 'VARCHAR', 'user', 'id', true, 300, null);
+        $this->addColumn('name', 'name', 'VARCHAR', true, 300, null);
+        $this->addColumn('reference', 'Reference', 'VARCHAR', true, 300, null);
+        $this->addColumn('provider', 'Provider', 'VARCHAR', true, 300, null);
+        $this->addColumn('created', 'Created', 'TIMESTAMP', false, null, null);
+        $this->addColumn('deployed', 'Deployed', 'TIMESTAMP', false, null, null);
+        $this->addColumn('destroyed', 'Destroyed', 'TIMESTAMP', false, null, null);
+        $this->addColumn('failed', 'Failed', 'TIMESTAMP', false, null, null);
+        $this->addColumn('configuration', 'Configuration', 'CLOB', false, null, null);
     } // initialize()
 
     /**
@@ -146,6 +188,13 @@ class MetadataTableMap extends TableMap
      */
     public function buildRelations()
     {
+        $this->addRelation('DeploymentUser', '\\User', RelationMap::MANY_TO_ONE, array (
+  0 =>
+  array (
+    0 => ':user',
+    1 => ':id',
+  ),
+), 'RESTRICT', null, null, false);
     } // buildRelations()
 
     /**
@@ -164,11 +213,11 @@ class MetadataTableMap extends TableMap
     public static function getPrimaryKeyHashFromRow($row, $offset = 0, $indexType = TableMap::TYPE_NUM)
     {
         // If the PK cannot be derived from the row, return NULL.
-        if ($row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Idmetadata', TableMap::TYPE_PHPNAME, $indexType)] === null) {
+        if ($row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)] === null) {
             return null;
         }
 
-        return null === $row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Idmetadata', TableMap::TYPE_PHPNAME, $indexType)] || is_scalar($row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Idmetadata', TableMap::TYPE_PHPNAME, $indexType)]) || is_callable([$row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Idmetadata', TableMap::TYPE_PHPNAME, $indexType)], '__toString']) ? (string) $row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Idmetadata', TableMap::TYPE_PHPNAME, $indexType)] : $row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Idmetadata', TableMap::TYPE_PHPNAME, $indexType)];
+        return null === $row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)] || is_scalar($row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)]) || is_callable([$row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)], '__toString']) ? (string) $row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)] : $row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
     }
 
     /**
@@ -185,10 +234,10 @@ class MetadataTableMap extends TableMap
      */
     public static function getPrimaryKeyFromRow($row, $offset = 0, $indexType = TableMap::TYPE_NUM)
     {
-        return (string) $row[
+        return (int) $row[
             $indexType == TableMap::TYPE_NUM
                 ? 0 + $offset
-                : self::translateFieldName('Idmetadata', TableMap::TYPE_PHPNAME, $indexType)
+                : self::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)
         ];
     }
 
@@ -205,7 +254,7 @@ class MetadataTableMap extends TableMap
      */
     public static function getOMClass($withPrefix = true)
     {
-        return $withPrefix ? MetadataTableMap::CLASS_DEFAULT : MetadataTableMap::OM_CLASS;
+        return $withPrefix ? DeploymentTableMap::CLASS_DEFAULT : DeploymentTableMap::OM_CLASS;
     }
 
     /**
@@ -219,22 +268,22 @@ class MetadataTableMap extends TableMap
      *
      * @throws PropelException Any exceptions caught during processing will be
      *                         rethrown wrapped into a PropelException.
-     * @return array           (Metadata object, last column rank)
+     * @return array           (Deployment object, last column rank)
      */
     public static function populateObject($row, $offset = 0, $indexType = TableMap::TYPE_NUM)
     {
-        $key = MetadataTableMap::getPrimaryKeyHashFromRow($row, $offset, $indexType);
-        if (null !== ($obj = MetadataTableMap::getInstanceFromPool($key))) {
+        $key = DeploymentTableMap::getPrimaryKeyHashFromRow($row, $offset, $indexType);
+        if (null !== ($obj = DeploymentTableMap::getInstanceFromPool($key))) {
             // We no longer rehydrate the object, since this can cause data loss.
             // See http://www.propelorm.org/ticket/509
             // $obj->hydrate($row, $offset, true); // rehydrate
-            $col = $offset + MetadataTableMap::NUM_HYDRATE_COLUMNS;
+            $col = $offset + DeploymentTableMap::NUM_HYDRATE_COLUMNS;
         } else {
-            $cls = MetadataTableMap::OM_CLASS;
-            /** @var Metadata $obj */
+            $cls = DeploymentTableMap::OM_CLASS;
+            /** @var Deployment $obj */
             $obj = new $cls();
             $col = $obj->hydrate($row, $offset, false, $indexType);
-            MetadataTableMap::addInstanceToPool($obj, $key);
+            DeploymentTableMap::addInstanceToPool($obj, $key);
         }
 
         return array($obj, $col);
@@ -257,18 +306,18 @@ class MetadataTableMap extends TableMap
         $cls = static::getOMClass(false);
         // populate the object(s)
         while ($row = $dataFetcher->fetch()) {
-            $key = MetadataTableMap::getPrimaryKeyHashFromRow($row, 0, $dataFetcher->getIndexType());
-            if (null !== ($obj = MetadataTableMap::getInstanceFromPool($key))) {
+            $key = DeploymentTableMap::getPrimaryKeyHashFromRow($row, 0, $dataFetcher->getIndexType());
+            if (null !== ($obj = DeploymentTableMap::getInstanceFromPool($key))) {
                 // We no longer rehydrate the object, since this can cause data loss.
                 // See http://www.propelorm.org/ticket/509
                 // $obj->hydrate($row, 0, true); // rehydrate
                 $results[] = $obj;
             } else {
-                /** @var Metadata $obj */
+                /** @var Deployment $obj */
                 $obj = new $cls();
                 $obj->hydrate($row);
                 $results[] = $obj;
-                MetadataTableMap::addInstanceToPool($obj, $key);
+                DeploymentTableMap::addInstanceToPool($obj, $key);
             } // if key exists
         }
 
@@ -289,13 +338,27 @@ class MetadataTableMap extends TableMap
     public static function addSelectColumns(Criteria $criteria, $alias = null)
     {
         if (null === $alias) {
-            $criteria->addSelectColumn(MetadataTableMap::COL_IDMETADATA);
-            $criteria->addSelectColumn(MetadataTableMap::COL_ISACCEPTTERMCONDITION);
-            $criteria->addSelectColumn(MetadataTableMap::COL_ISREGISTERGALAXY);
+            $criteria->addSelectColumn(DeploymentTableMap::COL_ID);
+            $criteria->addSelectColumn(DeploymentTableMap::COL_USER);
+            $criteria->addSelectColumn(DeploymentTableMap::COL_NAME);
+            $criteria->addSelectColumn(DeploymentTableMap::COL_REFERENCE);
+            $criteria->addSelectColumn(DeploymentTableMap::COL_PROVIDER);
+            $criteria->addSelectColumn(DeploymentTableMap::COL_CREATED);
+            $criteria->addSelectColumn(DeploymentTableMap::COL_DEPLOYED);
+            $criteria->addSelectColumn(DeploymentTableMap::COL_DESTROYED);
+            $criteria->addSelectColumn(DeploymentTableMap::COL_FAILED);
+            $criteria->addSelectColumn(DeploymentTableMap::COL_CONFIGURATION);
         } else {
-            $criteria->addSelectColumn($alias . '.idmetadata');
-            $criteria->addSelectColumn($alias . '.isAcceptTermCondition');
-            $criteria->addSelectColumn($alias . '.isRegisterGalaxy');
+            $criteria->addSelectColumn($alias . '.id');
+            $criteria->addSelectColumn($alias . '.user');
+            $criteria->addSelectColumn($alias . '.name');
+            $criteria->addSelectColumn($alias . '.reference');
+            $criteria->addSelectColumn($alias . '.provider');
+            $criteria->addSelectColumn($alias . '.created');
+            $criteria->addSelectColumn($alias . '.deployed');
+            $criteria->addSelectColumn($alias . '.destroyed');
+            $criteria->addSelectColumn($alias . '.failed');
+            $criteria->addSelectColumn($alias . '.configuration');
         }
     }
 
@@ -308,7 +371,7 @@ class MetadataTableMap extends TableMap
      */
     public static function getTableMap()
     {
-        return Propel::getServiceContainer()->getDatabaseMap(MetadataTableMap::DATABASE_NAME)->getTable(MetadataTableMap::TABLE_NAME);
+        return Propel::getServiceContainer()->getDatabaseMap(DeploymentTableMap::DATABASE_NAME)->getTable(DeploymentTableMap::TABLE_NAME);
     }
 
     /**
@@ -316,16 +379,16 @@ class MetadataTableMap extends TableMap
      */
     public static function buildTableMap()
     {
-        $dbMap = Propel::getServiceContainer()->getDatabaseMap(MetadataTableMap::DATABASE_NAME);
-        if (!$dbMap->hasTable(MetadataTableMap::TABLE_NAME)) {
-            $dbMap->addTableObject(new MetadataTableMap());
+        $dbMap = Propel::getServiceContainer()->getDatabaseMap(DeploymentTableMap::DATABASE_NAME);
+        if (!$dbMap->hasTable(DeploymentTableMap::TABLE_NAME)) {
+            $dbMap->addTableObject(new DeploymentTableMap());
         }
     }
 
     /**
-     * Performs a DELETE on the database, given a Metadata or Criteria object OR a primary key value.
+     * Performs a DELETE on the database, given a Deployment or Criteria object OR a primary key value.
      *
-     * @param mixed               $values Criteria or Metadata object or primary key or array of primary keys
+     * @param mixed               $values Criteria or Deployment object or primary key or array of primary keys
      *              which is used to create the DELETE statement
      * @param  ConnectionInterface $con the connection to use
      * @return int             The number of affected rows (if supported by underlying database driver).  This includes CASCADE-related rows
@@ -336,27 +399,27 @@ class MetadataTableMap extends TableMap
      public static function doDelete($values, ConnectionInterface $con = null)
      {
         if (null === $con) {
-            $con = Propel::getServiceContainer()->getWriteConnection(MetadataTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(DeploymentTableMap::DATABASE_NAME);
         }
 
         if ($values instanceof Criteria) {
             // rename for clarity
             $criteria = $values;
-        } elseif ($values instanceof \Metadata) { // it's a model object
+        } elseif ($values instanceof \Deployment) { // it's a model object
             // create criteria based on pk values
             $criteria = $values->buildPkeyCriteria();
         } else { // it's a primary key, or an array of pks
-            $criteria = new Criteria(MetadataTableMap::DATABASE_NAME);
-            $criteria->add(MetadataTableMap::COL_IDMETADATA, (array) $values, Criteria::IN);
+            $criteria = new Criteria(DeploymentTableMap::DATABASE_NAME);
+            $criteria->add(DeploymentTableMap::COL_ID, (array) $values, Criteria::IN);
         }
 
-        $query = MetadataQuery::create()->mergeWith($criteria);
+        $query = DeploymentQuery::create()->mergeWith($criteria);
 
         if ($values instanceof Criteria) {
-            MetadataTableMap::clearInstancePool();
+            DeploymentTableMap::clearInstancePool();
         } elseif (!is_object($values)) { // it's a primary key, or an array of pks
             foreach ((array) $values as $singleval) {
-                MetadataTableMap::removeInstanceFromPool($singleval);
+                DeploymentTableMap::removeInstanceFromPool($singleval);
             }
         }
 
@@ -364,20 +427,20 @@ class MetadataTableMap extends TableMap
     }
 
     /**
-     * Deletes all rows from the metadata table.
+     * Deletes all rows from the deployment table.
      *
      * @param ConnectionInterface $con the connection to use
      * @return int The number of affected rows (if supported by underlying database driver).
      */
     public static function doDeleteAll(ConnectionInterface $con = null)
     {
-        return MetadataQuery::create()->doDeleteAll($con);
+        return DeploymentQuery::create()->doDeleteAll($con);
     }
 
     /**
-     * Performs an INSERT on the database, given a Metadata or Criteria object.
+     * Performs an INSERT on the database, given a Deployment or Criteria object.
      *
-     * @param mixed               $criteria Criteria or Metadata object containing data that is used to create the INSERT statement.
+     * @param mixed               $criteria Criteria or Deployment object containing data that is used to create the INSERT statement.
      * @param ConnectionInterface $con the ConnectionInterface connection to use
      * @return mixed           The new primary key.
      * @throws PropelException Any exceptions caught during processing will be
@@ -386,18 +449,22 @@ class MetadataTableMap extends TableMap
     public static function doInsert($criteria, ConnectionInterface $con = null)
     {
         if (null === $con) {
-            $con = Propel::getServiceContainer()->getWriteConnection(MetadataTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(DeploymentTableMap::DATABASE_NAME);
         }
 
         if ($criteria instanceof Criteria) {
             $criteria = clone $criteria; // rename for clarity
         } else {
-            $criteria = $criteria->buildCriteria(); // build Criteria from Metadata object
+            $criteria = $criteria->buildCriteria(); // build Criteria from Deployment object
+        }
+
+        if ($criteria->containsKey(DeploymentTableMap::COL_ID) && $criteria->keyContainsValue(DeploymentTableMap::COL_ID) ) {
+            throw new PropelException('Cannot insert a value for auto-increment primary key ('.DeploymentTableMap::COL_ID.')');
         }
 
 
         // Set the correct dbName
-        $query = MetadataQuery::create()->mergeWith($criteria);
+        $query = DeploymentQuery::create()->mergeWith($criteria);
 
         // use transaction because $criteria could contain info
         // for more than one table (I guess, conceivably)
@@ -406,7 +473,7 @@ class MetadataTableMap extends TableMap
         });
     }
 
-} // MetadataTableMap
+} // DeploymentTableMap
 // This is the static code needed to register the TableMap for this table with the main Propel class.
 //
-MetadataTableMap::buildTableMap();
+DeploymentTableMap::buildTableMap();

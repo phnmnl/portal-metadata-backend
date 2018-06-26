@@ -1,9 +1,9 @@
 <?php
 
-use Base\Metadata as BaseMetadata;
+use Base\UserQuery as BaseUserQuery;
 
 /**
- * Skeleton subclass for representing a row from the 'metadata' table.
+ * Skeleton subclass for performing query and update operations on the 'user' table.
  *
  *
  *
@@ -12,7 +12,7 @@ use Base\Metadata as BaseMetadata;
  * long as it does not already exist in the output directory.
  *
  */
-class Metadata extends BaseMetadata
+class UserQuery extends BaseUserQuery
 {
 
 }
