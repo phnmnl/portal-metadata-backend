@@ -288,15 +288,24 @@ class UserDeploymentsService
     }
 
 
-    function updateDeployment($id, $reference, $data)
+    function updateDeployment($userId, $reference, $data)
     {
         $result = array();
-        $this->logger->debug(" data: " . gettype($data) . " of $id");
+        $this->logger->debug(" data: " . gettype($data) . " of $userId");
         try {
-            $deployment = DeploymentQuery::create()->findOneByArray(array("user" => $id, "reference" => $reference));
-            $this->logger->debug(" object: " . get_class($deployment) . " of $id");
+            $deployment = DeploymentQuery::create()->findOneByArray(array("user" => $userId, "reference" => $reference));
+            $this->logger->debug(" object: " . get_class($deployment) . " of $userId");
             if ($deployment == null) {
-                $result = helper::getError(404, 'No deployment found with ID ' . $id);
+                $user = UserQuery::create()->findOneById($userId);
+                $this->logger->debug(" object: " . get_class($user) . " of $userId");
+                if ($user == null) {
+                    $result = helper::getError(404, 'No user found with ID ' . $userId);
+                } else {
+                    $deployment = new Deployment($data);
+                    $deployment->setDeploymentUser($user);
+                    $deployment->save();
+                    $result['data'] = $deployment->toArray();
+                }
             } else {
                 $deployment->updateTimesFromData($data);
                 $deployment->save();
