@@ -4,15 +4,15 @@
 $container = $app->getContainer();
 
 // view renderer
-$container['renderer'] = function ($c) {
-    $settings = $c->get('settings')['renderer'];
+$container['renderer'] = function ($container) {
+    $settings = $container->get('settings')['renderer'];
     return new Slim\Views\PhpRenderer($settings['template_path']);
 };
 
 // monolog
-$container['logger'] = function ($c) {
+$container['logger'] = function ($container) {
     // logger settings
-    $settings = $c->get('settings')['logger'];
+    $settings = $container->get('settings')['logger'];
     // Instantiate the global logger
     $logger = new Monolog\Logger($settings['name']);
     // Use the application settings
@@ -31,27 +31,33 @@ $container['logger'] = function ($c) {
 };
 
 // MetadataService
-$container['UserDeploymentsService'] = function ($c) {
-    $settings = $c->get('settings');
-    return new UserDeploymentsService($c['logger'], $settings["galaxy"]["url"], $settings["galaxy"]["api_key"]);
+$container['UserDeploymentsService'] = function ($container) {
+    $settings = $container->get('settings');
+    return new UserDeploymentsService($container['logger'], $settings["galaxy"]["url"], $settings["galaxy"]["api_key"]);
+};
+
+$container['CloudProviderMetadataService'] = function ($container) {
+    return new CloudProviderMetadataService($container['logger']);
+};
+
+$container['OpenStackMetadataService'] = function ($container) {
+    return new OpenStackMetadataService($container['logger']);
+};
+
+$container['GoogleCloudMetadataService'] = function ($container) {
+    return new GoogleCloudMetadataService($container['logger']);
+};
+
+$container['AwsMetadataService'] = function ($container) {
+    return new AwsMetadataService($container['logger']);
 };
 
 
 // Set the default ErrorHandler
-$container['errorHandler'] = function ($c) {
-    return function ($request, $response, $exception) use ($c) {
-        $c['logger']->debug("Handling error with custom phpErrorHandler");
-
-        if ($exception instanceof UserDeploymentsServiceException) {
-            $c['logger']->debug("instance of MetadataServiceException");
-            return $c['response']->withJson($exception->toArray(), $exception->getCode());
-        } else
-            return $c['response']->withJson(
-                array(
-                    "code" => $exception->getCode(),
-                    "message" => $exception->getMessage(),
-                    "trace" => $exception->getTrace()
-                ), $exception->getCode()
-            );
-    };
+$container['errorHandler'] = function ($container) {
+    return new APIControllerResponseHandler($container);
+//    return function ($request, $response, $exception) use ($container) {
+//        return $response->withStatus(401);
+////        return APIControllerResponseHandler::handleException($request, $response, $container, $exception);
+//    };
 };
