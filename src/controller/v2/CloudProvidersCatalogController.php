@@ -3,6 +3,9 @@
 // include required service
 require_once __DIR__ . '/../../service/CloudProvidersCatalogService.php';
 
+// include utilities
+require_once __DIR__ . '/utilities.php';
+
 // API endpoint prefix
 $PREFIX = "";
 
@@ -92,18 +95,3 @@ $app->get(buildPath($PREFIX, '/providers/catalog/{name}/credentials'), function 
 });
 
 
-/** Utility functions to update the URL to get provider logos */
-function updatePaths($data)
-{
-    foreach ($data as &$datum) {
-        updatePath($datum);
-    }
-    return $data;
-}
-
-function updatePath(&$datum)
-{
-    global $app;
-    $datum["logo"]["path"] = $app->getContainer()->get('settings')["api"]["path"] . "/v2/providers/catalog/" . $datum['id'] . "/logo";
-    return $datum;
-}
