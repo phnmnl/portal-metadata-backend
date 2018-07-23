@@ -52,6 +52,10 @@ $container['AwsMetadataService'] = function ($container) {
     return new AwsMetadataService($container['logger']);
 };
 
+$container['CloudProvidersCatalogService'] = function ($container) {
+    return new CloudProvidersCatalogService($container['logger'], $container->get('settings'));
+};
+
 
 // Set the default ErrorHandler
 $container['errorHandler'] = function ($container) {

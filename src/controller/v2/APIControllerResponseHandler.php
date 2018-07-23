@@ -30,6 +30,17 @@ class APIControllerResponseHandler
             ->withJson(array("data" => $data));
     }
 
+    /**
+     * @param \Slim\Http\Response $response
+     * @param $image
+     * @return \Slim\Http\Response
+     */
+    public static function sendImage(\Slim\Http\Response $response, $image)
+    {
+        $response->write($image);
+        return $response->withHeader('Content-Type', FILEINFO_MIME_TYPE);
+    }
+
 
     /**
      * @param $request
