@@ -1,6 +1,6 @@
 # Portal Metadata Backend
 
-Version: 2.0rc1
+Version: 2.1rc1
 
 ## Description
 
