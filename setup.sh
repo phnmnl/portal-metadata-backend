@@ -46,14 +46,17 @@ sed "s/password: <MYSQL_PASSWORD>/password: ${MYSQL_PASSWORD}/" > ${current_prop
 settings_file="src/settings.php"
 settings_template_file="src/settings.php.template"
 
-# if the template has been remove, use the actual file as template
+# if the template has been removed, use the actual file as template
 if [[ ! -f ${settings_template_file} ]]; then
     mv ${settings_file} ${settings_template_file}
 fi
 
 # update GALAXY settings
-sed "s@\"url\" => \"<GALAXY_URL>\"@\"url\" => \"${GALAXY_URL}\"@g" ${settings_template_file} | \
-sed "s@\"api_key\" => \"<GALAXY_API_KEY>\"@\"api_key\" => \"${GALAXY_API_KEY}\"@g" > ${settings_file}
+cat ${settings_template_file} | sed \
+  -e "s@\"url\" => \"<GALAXY_URL>\"@\"url\" => \"${GALAXY_URL}\"@" \
+  -e "s@\"api_key\" => \"<GALAXY_API_KEY>\"@\"api_key\" => \"${GALAXY_API_KEY}\"@" \
+  -e "s@'folder' => getenv('PROVIDERS_DIR')@'folder' => '${PROVIDERS_DIR}'@" \
+  > ${settings_file}
 
 
 
