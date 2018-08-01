@@ -19,7 +19,8 @@ $app->post(buildPath($PREFIX, '/providers/gcp/authenticate'), function ($request
 
     // reqd parameters
     $parsedBody = $request->getParsedBody();
-    $logger->debug("Parsed body" . json_encode($parsedBody));
+    //$logger->debug("Parsed body" . json_encode($parsedBody));
+    $logger->debug("Parsed body -- omitted");
 
     $data = $service->authenticate($parsedBody);
 

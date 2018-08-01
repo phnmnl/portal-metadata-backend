@@ -18,7 +18,8 @@ $app->post(buildPath($PREFIX, '/providers/openstack/authenticate'), function ($r
 
     // reqd parameters
     $parsedBody = $request->getParsedBody();
-    $logger->debug("Parsed body" . json_encode($parsedBody));
+    //$logger->debug("Parsed body" . json_encode($parsedBody));
+    $logger->debug("Parsed body -- omitted");
 
     $data = $service->authenticate($parsedBody);
 
