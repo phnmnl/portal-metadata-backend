@@ -1,7 +1,7 @@
 <?php
 
 
-class MetadataServiceException extends Exception
+class ServiceException extends Exception
 {
     protected $data;
 

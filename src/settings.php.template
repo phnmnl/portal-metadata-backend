@@ -26,6 +26,11 @@ return [
         'galaxy' => [
             "url" => "<GALAXY_URL>",
             "api_key" => "<GALAXY_API_KEY>"
+        ],
+
+        // Folder containing providers configurations
+        'providers' => [
+          'folder' => getenv('PROVIDERS_DIR')
         ]
     ],
 ];

@@ -2,6 +2,7 @@
 
 namespace Tests\Functional;
 
+use Propel\Runtime\Propel;
 use Slim\App;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -23,12 +24,43 @@ class BaseTestCase extends \PHPUnit_Framework_TestCase
     protected $withMiddleware = true;
 
     /**
+     * @var \Monolog\Logger
+     */
+    protected $logger;
+
+    /**
+     * @var mixed
+     */
+    protected $settings;
+
+    /**
+     * BaseTestCase constructor.
+     * @param null $name
+     * @param array $data
+     * @param string $dataName
+     * @throws \Exception
+     */
+    public function __construct($name = null, array $data = [], $dataName = '')
+    {
+        parent::__construct($name, $data, $dataName);
+
+        // Use the application settings
+        $this->settings = require __DIR__ . '/../../src/settings.php';
+
+        // configure connection to DB
+        require __DIR__ . '/../../schema/generated-conf/config.php';
+    }
+
+
+    /**
      * Process the application given a request method and URI
      *
      * @param string $requestMethod the request method (e.g. GET, POST, etc.)
      * @param string $requestUri the request URI
      * @param array|object|null $requestData the request data
-     * @return \Slim\Http\Response
+     * @return \Psr\Http\Message\ResponseInterface|Response
+     * @throws \Slim\Exception\MethodNotAllowedException
+     * @throws \Slim\Exception\NotFoundException
      */
     public function runApp($requestMethod, $requestUri, $requestData = null)
     {
@@ -51,14 +83,16 @@ class BaseTestCase extends \PHPUnit_Framework_TestCase
         // Set up a response object
         $response = new Response();
 
-        // Use the application settings
-        $settings = require __DIR__ . '/../../src/settings.php';
-
         // Instantiate the application
-        $app = new App($settings);
+        $app = new App($this->settings);
 
         // Set up dependencies
         require __DIR__ . '/../../src/dependencies.php';
+
+        // Configure global logger
+        $this->logger = $app->getContainer()->get("logger");
+        // Configure the default logger of Propel
+        Propel::getServiceContainer()->setLogger('defaultLogger', $this->logger);
 
         // Register middleware
         if ($this->withMiddleware) {
