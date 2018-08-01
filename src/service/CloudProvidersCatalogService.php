@@ -26,8 +26,10 @@ class CloudProvidersCatalogService
         $result = array();
         $base_folder = $this->getProvidersBaseFolder();
         $this->logger->debug("Scanning folder: $base_folder");
-        if (!file_exists($base_folder))
-            throw new ServiceException("Unable to find folder containing providers settings");
+        if (!file_exists($base_folder)) {
+          $this->logger->debug("Provider folder doesn't exist");
+          return $result;
+        }
         $list = scandir($base_folder);
 
         foreach ($list as $f) {
