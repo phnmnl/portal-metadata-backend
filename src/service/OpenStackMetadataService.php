@@ -20,7 +20,7 @@ class OpenStackMetadataService
      */
     public function authenticate($credentials)
     {
-        if (isset($credentials["OS_TENANT_ID"]))
+        if (isset($credentials["OS_TENANT_NAME"]) || isset($credentials["OS_TENANT_ID"]))
             return $this->authenticateV2($credentials);
         return $this->authenticateV3($credentials);
     }
@@ -34,18 +34,34 @@ class OpenStackMetadataService
      */
     public function authenticateV2($credentials)
     {
-        foreach (["OS_AUTH_URL", "OS_USERNAME", "OS_PASSWORD", "OS_TENANT_ID"] as $key) {
+        /* For V2 the API seems to require:
+         *   - OS_AUTH_URL
+         *   - OS_USERNAME
+         *   - OS_PASSWORD
+         * Plus one of OS_TENANT_ID or OS_TENANT_NAME.
+         * In our tests with Embassy cloud, if both of the latter parts are missing
+         * we don't get a real authentication error but something about an empty catalog.
+         */
+        foreach (["OS_AUTH_URL", "OS_USERNAME", "OS_PASSWORD"] as $key) {
             if (!isset($credentials[$key]))
                 throw new ServiceAuthorizationException("Credentials doesn't contain '$key' property");
         }
+        if ( (!isset($credentials["OS_TENANT_NAME"]) || empty($credentials["OS_TENANT_NAME"])) && 
+             (!isset($credentials["OS_TENANT_ID"]) || empty($credentials["OS_TENANT_ID"])) )
+                throw new ServiceAuthorizationException("At least one of OS_TENANT_ID and OS_TENANT_NAME is required for authentication ");
+
         $requestParameters = [
             "auth" => [
                 "passwordCredentials" => [
                     "username" => $credentials["OS_USERNAME"], "password" => $credentials["OS_PASSWORD"]
-                ],
-                "tenantId" => $credentials["OS_TENANT_ID"]
+                ]
             ]
         ];
+        if (isset($credentials["OS_TENANT_ID"]))
+            $requestParameters["auth"]["tenantId"] = $credentials["OS_TENANT_ID"];
+        if (isset($credentials["OS_TENANT_NAME"]))
+            $requestParameters["auth"]["tenantName"] = $credentials["OS_TENANT_NAME"];
+
         $OS_AUTH_URL = rtrim($credentials["OS_AUTH_URL"], "/") . "/tokens";
         return $this->setTokenV2($this->toPostRequest($OS_AUTH_URL, $requestParameters));
     }
@@ -67,10 +83,25 @@ class OpenStackMetadataService
      */
     public function authenticateV3($credentials)
     {
-        foreach (["OS_AUTH_URL", "OS_USERNAME", "OS_PASSWORD", "OS_USER_DOMAIN_NAME", "OS_PROJECT_NAME"] as $key) {
-            if (!isset($credentials[$key]))
+        /* For V3 the API seems to require:
+         *   - OS_AUTH_URL
+         *   - OS_USERNAME
+         *   - OS_PASSWORD
+         *   - OS_USER_DOMAIN_NAME
+         * Plus one of OS_PROJECT_ID or OS_PROJECT_NAME.
+         *
+         * According to the API documentation, it is possible to authenticate without a PROJECT
+         * (a request with a 'scope' object is legitimate).  However, none of the openstack
+         * clouds we tested against authenticated users successfully without this.
+         */
+        foreach (["OS_AUTH_URL", "OS_USERNAME", "OS_PASSWORD", "OS_USER_DOMAIN_NAME"] as $key) {
+            if (!isset($credentials[$key]) || empty($credentials[$key]))
                 throw new ServiceAuthorizationException("Credentials doesn't contain '$key' property");
         }
+        if ( (!isset($credentials["OS_PROJECT_NAME"]) || empty($credentials["OS_PROJECT_NAME"])) && 
+             (!isset($credentials["OS_PROJECT_ID"]) || empty($credentials["OS_PROJECT_ID"])) )
+                throw new ServiceAuthorizationException("At least one of OS_PROJECT_ID and OS_PROJECT_NAME is required for authentication ");
+
         $requestParameters = array(
             "auth" => array(
                 "identity" => array(
@@ -91,12 +122,15 @@ class OpenStackMetadataService
                     "project" => array(
                         "domain" => array(
                             "name" => $credentials["OS_USER_DOMAIN_NAME"]
-                        ),
-                        "name" => $credentials["OS_PROJECT_NAME"]
+                        )
                     )
                 )
             )
         );
+        if (isset($credentials["OS_PROJECT_ID"]))
+            $requestParameters["auth"]["scope"]["project"]["id"] = $credentials["OS_PROJECT_ID"];
+        if (isset($credentials["OS_PROJECT_NAME"]))
+            $requestParameters["auth"]["scope"]["project"]["name"] = $credentials["OS_PROJECT_NAME"];
 
         $OS_AUTH_URL = rtrim($credentials["OS_AUTH_URL"], "/") . "/auth/tokens?catalog";
 
