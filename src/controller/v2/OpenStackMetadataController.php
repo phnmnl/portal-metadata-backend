@@ -59,6 +59,57 @@ $app->post(buildPath($PREFIX, '/providers/openstack/flavors'), function ($reques
 /**
  *
  */
+$app->post(buildPath($PREFIX, '/providers/openstack/networks'), function ($request, $response) {
+
+    // get the logger
+    $logger = $this->get('logger');
+    // get the service
+    $service = $this->get('OpenStackMetadataService');
+
+    // reqd parameters
+    $parsedBody = $request->getParsedBody();
+    $logger->debug("Parsed body" . json_encode($parsedBody));
+
+    $authenticationToken = $service->authenticate($parsedBody);
+
+    $token = $authenticationToken["authToken"];
+    $logger->debug("Token param: " . $token);
+
+    $data = $service->getNetworks($authenticationToken);
+
+    // prepare response object
+    return APIControllerResponseHandler::handleResponse($response, $data);
+});
+
+
+/**
+ *
+ */
+$app->post(buildPath($PREFIX, '/providers/openstack/private-networks'), function ($request, $response) {
+
+    // get the logger
+    $logger = $this->get('logger');
+    // get the service
+    $service = $this->get('OpenStackMetadataService');
+
+    // reqd parameters
+    $parsedBody = $request->getParsedBody();
+    $logger->debug("Parsed body" . json_encode($parsedBody));
+
+    $authenticationToken = $service->authenticate($parsedBody);
+
+    $token = $authenticationToken["authToken"];
+    $logger->debug("Token param: " . $token);
+
+    $data = $service->getPrivateNetworks($authenticationToken);
+
+    // prepare response object
+    return APIControllerResponseHandler::handleResponse($response, $data);
+});
+
+/**
+ *
+ */
 $app->post(buildPath($PREFIX, '/providers/openstack/external-networks'), function ($request, $response) {
 
     // get the logger
