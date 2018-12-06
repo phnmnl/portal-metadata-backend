@@ -256,8 +256,8 @@ class OpenStackMetadataService
     public function getExternalNetworks($authenticationToken)
     {
         return $this->doGet(
-            $this->buildUrl($this->getComputeEndPoint($authenticationToken),
-                'os-networks?router:external=true&fields=name'),
+            $this->buildUrl($this->getNetworkPoint($authenticationToken),
+                'networks?router:external=true&fields=name'),
             $authenticationToken[$this->TOKEN_FIELD]
         );
     }
