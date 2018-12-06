@@ -245,10 +245,33 @@ class OpenStackMetadataService
      */
     private function getComputeEndPoint($authenticationToken)
     {
+        return $this->getEndPoint($authenticationToken, "nova");
+    }
+
+    /**
+     * @param $authenticationToken
+     * @return null
+     * @throws Exception
+     */
+    private function getNetworkPoint($authenticationToken)
+    {
+        return $this->getEndPoint($authenticationToken, "neutron") . 'v2.0/';
+    }
+
+    /**
+     * @param $authenticationToken
+     * @return null
+     * @throws Exception
+     */
+    private function getEndPoint($authenticationToken, $type = "nova")
+    {
         $catalog = $this->getCatalag($authenticationToken);
         $this->logger->debug("Found Catalog: " . json_encode($catalog));
-        $endPoint = $this->getPublicEndPoint($catalog, "nova");
-        $this->logger->debug("Compute EndPoint: " . $endPoint);
+        $endPoint = $this->getPublicEndPoint($catalog, $type);
+        $this->logger->debug("Found EndPoint: " . $endPoint);
+        // Append '/'
+        if (substr($endPoint, -1) != '/')
+            $endPoint .= '/';
         return $endPoint;
     }
 
