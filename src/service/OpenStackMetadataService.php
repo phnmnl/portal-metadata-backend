@@ -222,11 +222,13 @@ class OpenStackMetadataService
      */
     public function getNetworks($authenticationToken)
     {
-        return $this->doGet(
-            $this->buildUrl($this->getNetworkPoint($authenticationToken),
-                'networks?fields=name'),
-            $authenticationToken[$this->TOKEN_FIELD]
-        );
+        return
+            $this->processNetworkResult(
+                $this->doGet(
+                    $this->buildUrl($this->getNetworkPoint($authenticationToken), 'networks'),
+                    $authenticationToken[$this->TOKEN_FIELD]
+                )
+            );
     }
 
     /**
@@ -236,11 +238,14 @@ class OpenStackMetadataService
      */
     public function getPrivateNetworks($authenticationToken)
     {
-        return $this->doGet(
-            $this->buildUrl($this->getNetworkPoint($authenticationToken),
-                'networks?router:external=false&fields=name'),
-            $authenticationToken[$this->TOKEN_FIELD]
-        );
+        return
+            $this->processNetworkResult(
+                $this->doGet(
+                    $this->buildUrl($this->getNetworkPoint($authenticationToken),
+                        'networks?router:external=false&fields=name'),
+                    $authenticationToken[$this->TOKEN_FIELD]
+                )
+            );
     }
 
     /**
@@ -250,20 +255,41 @@ class OpenStackMetadataService
      */
     public function getExternalNetworks($authenticationToken)
     {
-        return $this->doGet(
-            $this->buildUrl($this->getNetworkPoint($authenticationToken),
-                'networks?router:external=true&fields=name'),
-            $authenticationToken[$this->TOKEN_FIELD]
-        );
+        return
+            $this->processNetworkResult(
+                $this->doGet(
+                    $this->buildUrl($this->getNetworkPoint($authenticationToken),
+                        'networks?router:external=true&fields=name'),
+                    $authenticationToken[$this->TOKEN_FIELD]
+                )
+            );
     }
 
     public function getIpPools($authenticationToken)
     {
         return $this->doGet(
-            $this->buildUrl($this->getComputeEndPoint($authenticationToken),
-                'os-floating-ip-pools'),
+            $this->buildUrl($this->getComputeEndPoint($authenticationToken), 'os-floating-ip-pools'),
             $authenticationToken[$this->TOKEN_FIELD]
         );
+    }
+
+    private function processNetworkResult($data)
+    {
+        $result = array("networks" => array());
+        if ($data) {
+            for ($k = 0; $k < count($data["networks"]); $k++) {
+                $net = $data["networks"][$k];
+                $external = false;
+                if (isset($net["router:external"]) && $net["router:external"] == true) {
+                    $external = true;
+                }
+                array_push($result["networks"], array(
+                    "name" => $net["name"],
+                    "external" => $external
+                ));
+            }
+        }
+        return $result;
     }
 
 
