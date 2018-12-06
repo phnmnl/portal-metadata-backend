@@ -219,6 +219,20 @@ class OpenStackMetadataService
      * @return mixed
      * @throws Exception
      */
+    public function getPrivateNetworks($authenticationToken)
+    {
+        return $this->doGet(
+            $this->buildUrl($this->getNetworkPoint($authenticationToken),
+                'networks?router:external=false&fields=name'),
+            $authenticationToken[$this->TOKEN_FIELD]
+        );
+    }
+
+    /**
+     * @param $authenticationToken
+     * @return mixed
+     * @throws Exception
+     */
     public function getExternalNetworks($authenticationToken)
     {
         return $this->doGet(
