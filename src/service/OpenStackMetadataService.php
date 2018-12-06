@@ -187,7 +187,7 @@ class OpenStackMetadataService
         $this->logger->debug("Decoded body");
 
         // check the status code of the response
-        $this->logger->debug("ERROR CODE: $statusCode");
+        $this->logger->debug("STATUS CODE: $statusCode");
         if ($statusCode === 401)
             throw new ServiceAuthorizationException($data["error"]["message"], $result);
         else if (!in_array($statusCode, [200, 201]))
