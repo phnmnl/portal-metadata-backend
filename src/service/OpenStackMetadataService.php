@@ -279,7 +279,6 @@ class OpenStackMetadataService
         if ($data) {
             for ($k = 0; $k < count($data["networks"]); $k++) {
                 $net = $data["networks"][$k];
-                print_r($net);
                 $external = false;
                 if (isset($net["router:external"]) && $net["router:external"] == true) {
                     $external = true;
