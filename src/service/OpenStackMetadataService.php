@@ -187,7 +187,7 @@ class OpenStackMetadataService
         $this->logger->debug("Decoded body");
 
         // check the status code of the response
-        $this->logger->debug("ERROR CODE: $statusCode");
+        $this->logger->debug("STATUS CODE: $statusCode");
         if ($statusCode === 401)
             throw new ServiceAuthorizationException($data["error"]["message"], $result);
         else if (!in_array($statusCode, [200, 201]))
@@ -248,6 +248,40 @@ class OpenStackMetadataService
         );
     }
 
+
+    /**
+     * @param $authenticationToken
+     * @return mixed
+     * @throws Exception
+     */
+    public function getNetworks($authenticationToken)
+    {
+        return
+            $this->processNetworkResult(
+                $this->doGet(
+                    $this->buildUrl($this->getNetworkPoint($authenticationToken), 'networks'),
+                    $authenticationToken[$this->TOKEN_FIELD]
+                )
+            );
+    }
+
+    /**
+     * @param $authenticationToken
+     * @return mixed
+     * @throws Exception
+     */
+    public function getPrivateNetworks($authenticationToken)
+    {
+        return
+            $this->processNetworkResult(
+                $this->doGet(
+                    $this->buildUrl($this->getNetworkPoint($authenticationToken),
+                        'networks?router:external=false&fields=name'),
+                    $authenticationToken[$this->TOKEN_FIELD]
+                )
+            );
+    }
+
     /**
      * @param $authenticationToken
      * @return mixed
@@ -255,20 +289,42 @@ class OpenStackMetadataService
      */
     public function getExternalNetworks($authenticationToken)
     {
-        return $this->doGet(
-            $this->buildUrl($this->getComputeEndPoint($authenticationToken),
-                'os-networks?router:external=true&fields=name'),
-            $authenticationToken[$this->TOKEN_FIELD]
-        );
+        return
+            $this->processNetworkResult(
+                $this->doGet(
+                    $this->buildUrl($this->getNetworkPoint($authenticationToken),
+                        'networks?router:external=true&fields=name'),
+                    $authenticationToken[$this->TOKEN_FIELD]
+                )
+            );
     }
 
     public function getIpPools($authenticationToken)
     {
         return $this->doGet(
-            $this->buildUrl($this->getComputeEndPoint($authenticationToken),
-                'os-floating-ip-pools'),
+            $this->buildUrl($this->getComputeEndPoint($authenticationToken), 'os-floating-ip-pools'),
             $authenticationToken[$this->TOKEN_FIELD]
         );
+    }
+
+    private function processNetworkResult($data)
+    {
+        $result = array("networks" => array());
+        if ($data) {
+            for ($k = 0; $k < count($data["networks"]); $k++) {
+                $net = $data["networks"][$k];
+                $external = false;
+                if (isset($net["router:external"]) && $net["router:external"] == true) {
+                    $external = true;
+                }
+                array_push($result["networks"], array(
+                    "id" => $net["id"],
+                    "name" => $net["name"],
+                    "external" => $external
+                ));
+            }
+        }
+        return $result;
     }
 
 
@@ -279,10 +335,33 @@ class OpenStackMetadataService
      */
     private function getComputeEndPoint($authenticationToken)
     {
+        return $this->getEndPoint($authenticationToken, "nova");
+    }
+
+    /**
+     * @param $authenticationToken
+     * @return null
+     * @throws Exception
+     */
+    private function getNetworkPoint($authenticationToken)
+    {
+        return $this->getEndPoint($authenticationToken, "neutron") . 'v2.0/';
+    }
+
+    /**
+     * @param $authenticationToken
+     * @return null
+     * @throws Exception
+     */
+    private function getEndPoint($authenticationToken, $type = "nova")
+    {
         $catalog = $this->getCatalag($authenticationToken);
         $this->logger->debug("Found Catalog: " . json_encode($catalog));
-        $endPoint = $this->getPublicEndPoint($catalog, "nova");
-        $this->logger->debug("Compute EndPoint: " . $endPoint);
+        $endPoint = $this->getPublicEndPoint($catalog, $type);
+        $this->logger->debug("Found EndPoint: " . $endPoint);
+        // Append '/'
+        if (substr($endPoint, -1) != '/')
+            $endPoint .= '/';
         return $endPoint;
     }
 
