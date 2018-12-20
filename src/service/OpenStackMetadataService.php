@@ -20,7 +20,7 @@ class OpenStackMetadataService
      */
     public function authenticate($credentials)
     {
-        if (isset($credentials["OS_TENANT_ID"]))
+        if (isset($credentials["OS_TENANT_NAME"]) || isset($credentials["OS_TENANT_ID"]))
             return $this->authenticateV2($credentials);
         return $this->authenticateV3($credentials);
     }
@@ -34,18 +34,34 @@ class OpenStackMetadataService
      */
     public function authenticateV2($credentials)
     {
-        foreach (["OS_AUTH_URL", "OS_USERNAME", "OS_PASSWORD", "OS_TENANT_ID"] as $key) {
+        /* For V2 the API seems to require:
+         *   - OS_AUTH_URL
+         *   - OS_USERNAME
+         *   - OS_PASSWORD
+         * Plus one of OS_TENANT_ID or OS_TENANT_NAME.
+         * In our tests with Embassy cloud, if both of the latter parts are missing
+         * we don't get a real authentication error but something about an empty catalog.
+         */
+        foreach (["OS_AUTH_URL", "OS_USERNAME", "OS_PASSWORD"] as $key) {
             if (!isset($credentials[$key]))
                 throw new ServiceAuthorizationException("Credentials doesn't contain '$key' property");
         }
+        if ( (!isset($credentials["OS_TENANT_NAME"]) || empty($credentials["OS_TENANT_NAME"])) && 
+             (!isset($credentials["OS_TENANT_ID"]) || empty($credentials["OS_TENANT_ID"])) )
+                throw new ServiceAuthorizationException("At least one of OS_TENANT_ID and OS_TENANT_NAME is required for authentication ");
+
         $requestParameters = [
             "auth" => [
                 "passwordCredentials" => [
                     "username" => $credentials["OS_USERNAME"], "password" => $credentials["OS_PASSWORD"]
-                ],
-                "tenantId" => $credentials["OS_TENANT_ID"]
+                ]
             ]
         ];
+        if (isset($credentials["OS_TENANT_ID"]))
+            $requestParameters["auth"]["tenantId"] = $credentials["OS_TENANT_ID"];
+        if (isset($credentials["OS_TENANT_NAME"]))
+            $requestParameters["auth"]["tenantName"] = $credentials["OS_TENANT_NAME"];
+
         $OS_AUTH_URL = rtrim($credentials["OS_AUTH_URL"], "/") . "/tokens";
         return $this->setTokenV2($this->toPostRequest($OS_AUTH_URL, $requestParameters));
     }
@@ -67,10 +83,25 @@ class OpenStackMetadataService
      */
     public function authenticateV3($credentials)
     {
-        foreach (["OS_AUTH_URL", "OS_USERNAME", "OS_PASSWORD", "OS_USER_DOMAIN_NAME", "OS_PROJECT_NAME"] as $key) {
-            if (!isset($credentials[$key]))
+        /* For V3 the API seems to require:
+         *   - OS_AUTH_URL
+         *   - OS_USERNAME
+         *   - OS_PASSWORD
+         *   - OS_USER_DOMAIN_NAME
+         * Plus one of OS_PROJECT_ID or OS_PROJECT_NAME.
+         *
+         * According to the API documentation, it is possible to authenticate without a PROJECT
+         * (a request with a 'scope' object is legitimate).  However, none of the openstack
+         * clouds we tested against authenticated users successfully without this.
+         */
+        foreach (["OS_AUTH_URL", "OS_USERNAME", "OS_PASSWORD", "OS_USER_DOMAIN_NAME"] as $key) {
+            if (!isset($credentials[$key]) || empty($credentials[$key]))
                 throw new ServiceAuthorizationException("Credentials doesn't contain '$key' property");
         }
+        if ( (!isset($credentials["OS_PROJECT_NAME"]) || empty($credentials["OS_PROJECT_NAME"])) && 
+             (!isset($credentials["OS_PROJECT_ID"]) || empty($credentials["OS_PROJECT_ID"])) )
+                throw new ServiceAuthorizationException("At least one of OS_PROJECT_ID and OS_PROJECT_NAME is required for authentication ");
+
         $requestParameters = array(
             "auth" => array(
                 "identity" => array(
@@ -91,12 +122,15 @@ class OpenStackMetadataService
                     "project" => array(
                         "domain" => array(
                             "name" => $credentials["OS_USER_DOMAIN_NAME"]
-                        ),
-                        "name" => $credentials["OS_PROJECT_NAME"]
+                        )
                     )
                 )
             )
         );
+        if (isset($credentials["OS_PROJECT_ID"]))
+            $requestParameters["auth"]["scope"]["project"]["id"] = $credentials["OS_PROJECT_ID"];
+        if (isset($credentials["OS_PROJECT_NAME"]))
+            $requestParameters["auth"]["scope"]["project"]["name"] = $credentials["OS_PROJECT_NAME"];
 
         $OS_AUTH_URL = rtrim($credentials["OS_AUTH_URL"], "/") . "/auth/tokens?catalog";
 
@@ -153,7 +187,7 @@ class OpenStackMetadataService
         $this->logger->debug("Decoded body");
 
         // check the status code of the response
-        $this->logger->debug("ERROR CODE: $statusCode");
+        $this->logger->debug("STATUS CODE: $statusCode");
         if ($statusCode === 401)
             throw new ServiceAuthorizationException($data["error"]["message"], $result);
         else if (!in_array($statusCode, [200, 201]))
@@ -214,6 +248,40 @@ class OpenStackMetadataService
         );
     }
 
+
+    /**
+     * @param $authenticationToken
+     * @return mixed
+     * @throws Exception
+     */
+    public function getNetworks($authenticationToken)
+    {
+        return
+            $this->processNetworkResult(
+                $this->doGet(
+                    $this->buildUrl($this->getNetworkPoint($authenticationToken), 'networks'),
+                    $authenticationToken[$this->TOKEN_FIELD]
+                )
+            );
+    }
+
+    /**
+     * @param $authenticationToken
+     * @return mixed
+     * @throws Exception
+     */
+    public function getPrivateNetworks($authenticationToken)
+    {
+        return
+            $this->processNetworkResult(
+                $this->doGet(
+                    $this->buildUrl($this->getNetworkPoint($authenticationToken),
+                        'networks?router:external=false&fields=name'),
+                    $authenticationToken[$this->TOKEN_FIELD]
+                )
+            );
+    }
+
     /**
      * @param $authenticationToken
      * @return mixed
@@ -221,20 +289,42 @@ class OpenStackMetadataService
      */
     public function getExternalNetworks($authenticationToken)
     {
-        return $this->doGet(
-            $this->buildUrl($this->getComputeEndPoint($authenticationToken),
-                'os-networks?router:external=true&fields=name'),
-            $authenticationToken[$this->TOKEN_FIELD]
-        );
+        return
+            $this->processNetworkResult(
+                $this->doGet(
+                    $this->buildUrl($this->getNetworkPoint($authenticationToken),
+                        'networks?router:external=true&fields=name'),
+                    $authenticationToken[$this->TOKEN_FIELD]
+                )
+            );
     }
 
     public function getIpPools($authenticationToken)
     {
         return $this->doGet(
-            $this->buildUrl($this->getComputeEndPoint($authenticationToken),
-                'os-floating-ip-pools'),
+            $this->buildUrl($this->getComputeEndPoint($authenticationToken), 'os-floating-ip-pools'),
             $authenticationToken[$this->TOKEN_FIELD]
         );
+    }
+
+    private function processNetworkResult($data)
+    {
+        $result = array("networks" => array());
+        if ($data) {
+            for ($k = 0; $k < count($data["networks"]); $k++) {
+                $net = $data["networks"][$k];
+                $external = false;
+                if (isset($net["router:external"]) && $net["router:external"] == true) {
+                    $external = true;
+                }
+                array_push($result["networks"], array(
+                    "id" => $net["id"],
+                    "name" => $net["name"],
+                    "external" => $external
+                ));
+            }
+        }
+        return $result;
     }
 
 
@@ -245,10 +335,33 @@ class OpenStackMetadataService
      */
     private function getComputeEndPoint($authenticationToken)
     {
+        return $this->getEndPoint($authenticationToken, "nova");
+    }
+
+    /**
+     * @param $authenticationToken
+     * @return null
+     * @throws Exception
+     */
+    private function getNetworkPoint($authenticationToken)
+    {
+        return $this->getEndPoint($authenticationToken, "neutron") . 'v2.0/';
+    }
+
+    /**
+     * @param $authenticationToken
+     * @return null
+     * @throws Exception
+     */
+    private function getEndPoint($authenticationToken, $type = "nova")
+    {
         $catalog = $this->getCatalag($authenticationToken);
         $this->logger->debug("Found Catalog: " . json_encode($catalog));
-        $endPoint = $this->getPublicEndPoint($catalog, "nova");
-        $this->logger->debug("Compute EndPoint: " . $endPoint);
+        $endPoint = $this->getPublicEndPoint($catalog, $type);
+        $this->logger->debug("Found EndPoint: " . $endPoint);
+        // Append '/'
+        if (substr($endPoint, -1) != '/')
+            $endPoint .= '/';
         return $endPoint;
     }
 

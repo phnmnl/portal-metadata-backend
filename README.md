@@ -1,6 +1,6 @@
 # Portal Metadata Backend
 
-Version: 2.1
+Version: 2.3
 
 ## Description
 
@@ -41,8 +41,9 @@ start.sh <SERVICE-PORT>
 
 ## Tool Authors
 
-- Sijin He (EMBL-EBI)
 - Marco Enrico Piras (CRS4)
+- Luca Pireddu (CRS4)
+- Sijin He (EMBL-EBI)
 
 
 ## Git Repository

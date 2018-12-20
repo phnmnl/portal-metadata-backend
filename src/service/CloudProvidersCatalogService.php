@@ -33,11 +33,16 @@ class CloudProvidersCatalogService
         $list = scandir($base_folder);
 
         foreach ($list as $f) {
+          try {
             if (!$this->startsWith($f, ".")) {
-                $this->logger->debug("Folder: $f");
-                $data = $this->getData($f, $base_folder);
-                array_push($result, $data);
+              $this->logger->debug("Folder: $f");
+              $data = $this->getData($f, $base_folder);
+              array_push($result, $data);
             }
+          }
+          catch (ServiceException $e) {
+            $this->logger->error("Failed to parse data in repository for partner " . $f);
+          }
         }
         return $result;
     }
@@ -100,10 +105,20 @@ class CloudProvidersCatalogService
     private function getData($id, $base_folder = null)
     {
         $folder = $this->getProviderDataFolder($id, $base_folder);
+        $this->logger->debug("getting data from folder " . $folder);
         if (!file_exists($folder))
             throw new ServiceException("Folder $folder doesn't exist");
-        $str = file_get_contents("$folder/info.json");
+
+        $json_file = "$folder/info.json";
+        $str = file_get_contents($json_file);
         $data = json_decode($str, true);
+        if ($data === null) {
+          $msg = json_last_error_msg();
+          $error = json_last_error();
+          $error_msg = "Failed to parse $json_file. Error code: $error; message: $msg";
+          throw new ServiceException($error_msg);
+        }
+
         $data['id'] = $id;
         $this->logger->debug("Credential path: " . $data["credential"]["path"]);
         $rcFile = $this->readCredentialFile($id, $data);

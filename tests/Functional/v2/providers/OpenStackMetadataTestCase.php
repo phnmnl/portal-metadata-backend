@@ -116,20 +116,79 @@ abstract class OpenStackMetadataTestCase extends BaseTestCase
     /**
      *
      */
-    public function testListExternalNetworks()
+    public function testListNetworks()
     {
         try {
 
             $data = $this->getCredentials();
-            $response = $this->runApp('POST', '/providers/openstack/external-networks', $data);
-            $this->logger->debug("GET Flavours Response: " . (string)$response->getBody());
+            $response = $this->runApp('POST', '/providers/openstack/networks', $data);
+            $this->logger->debug("GET Networks Response: " . (string)$response->getBody());
             $this->assertEquals(200, $response->getStatusCode());
 
             $data = json_decode($response->getBody(), true)["data"];
             $this->logger->debug("Decoded RESPONSE: " . json_encode($data));
 
             // Check not empty
-            $this->assertNotEmpty($data, "Flavours array is empty!!!");
+            $this->assertNotEmpty($data, "Networks array is empty!!!");
+
+            // Check if it contains the "networks" key
+            $this->assertArrayHasKey("networks", $data, "Networks array doesn't contain the key 'networks'");
+            print_r($data);
+
+        } catch (MethodNotAllowedException $e) {
+            print_r($e->getTrace());
+        } catch (NotFoundException $e) {
+            print_r($e->getTrace());
+        }
+    }
+
+
+    /**
+     *
+     */
+    public function testListPrivateNetworks()
+    {
+        try {
+
+            $data = $this->getCredentials();
+            $response = $this->runApp('POST', '/providers/openstack/private-networks', $data);
+            $this->logger->debug("GET Networks Response: " . (string)$response->getBody());
+            $this->assertEquals(200, $response->getStatusCode());
+
+            $data = json_decode($response->getBody(), true)["data"];
+            $this->logger->debug("Decoded RESPONSE: " . json_encode($data));
+
+            // Check not empty
+            $this->assertNotEmpty($data, "Networks array is empty!!!");
+
+            // Check if it contains the "networks" key
+            $this->assertArrayHasKey("networks", $data, "Networks array doesn't contain the key 'networks'");
+            print_r($data);
+
+        } catch (MethodNotAllowedException $e) {
+            print_r($e->getTrace());
+        } catch (NotFoundException $e) {
+            print_r($e->getTrace());
+        }
+    }
+
+    /**
+     *
+     */
+    public function testListExternalNetworks()
+    {
+        try {
+
+            $data = $this->getCredentials();
+            $response = $this->runApp('POST', '/providers/openstack/external-networks', $data);
+            $this->logger->debug("GET Networks Response: " . (string)$response->getBody());
+            $this->assertEquals(200, $response->getStatusCode());
+
+            $data = json_decode($response->getBody(), true)["data"];
+            $this->logger->debug("Decoded RESPONSE: " . json_encode($data));
+
+            // Check not empty
+            $this->assertNotEmpty($data, "Networks array is empty!!!");
 
             // Check if it contains the "networks" key
             $this->assertArrayHasKey("networks", $data, "Networks array doesn't contain the key 'networks'");
